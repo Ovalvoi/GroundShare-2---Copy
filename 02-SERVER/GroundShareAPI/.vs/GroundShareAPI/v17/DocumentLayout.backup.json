@@ -1,0 +1,185 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|c:\\users\\yuval\\source\\repos\\.net shay\\groundshare-2\\02-server\\groundshareapi\\dal\\dbservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|solutionrelative:dal\\dbservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|c:\\users\\yuval\\source\\repos\\.net shay\\groundshare-2\\02-server\\groundshareapi\\dal\\ratingdal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|solutionrelative:dal\\ratingdal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|c:\\users\\yuval\\source\\repos\\.net shay\\groundshare-2\\02-server\\groundshareapi\\controllers\\ratingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|solutionrelative:controllers\\ratingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|c:\\users\\yuval\\source\\repos\\.net shay\\groundshare-2\\02-server\\groundshareapi\\bl\\rating.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|solutionrelative:bl\\rating.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|c:\\users\\yuval\\source\\repos\\.net shay\\groundshare-2\\02-server\\groundshareapi\\bl\\event.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|solutionrelative:bl\\event.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|c:\\users\\yuval\\source\\repos\\.net shay\\groundshare-2\\02-server\\groundshareapi\\controllers\\eventscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|solutionrelative:controllers\\eventscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|c:\\users\\yuval\\source\\repos\\.net shay\\groundshare-2\\02-server\\groundshareapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|c:\\users\\yuval\\source\\repos\\.net shay\\groundshare-2\\02-server\\groundshareapi\\controllers\\locationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|solutionrelative:controllers\\locationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|c:\\users\\yuval\\source\\repos\\.net shay\\groundshare-2\\02-server\\groundshareapi\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|solutionrelative:controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|c:\\users\\yuval\\source\\repos\\.net shay\\groundshare-2\\02-server\\groundshareapi\\bl\\location.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|solutionrelative:bl\\location.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "DBServices.cs",
+              "DocumentMoniker": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\DAL\\DBServices.cs",
+              "RelativeDocumentMoniker": "DAL\\DBServices.cs",
+              "ToolTip": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\DAL\\DBServices.cs",
+              "RelativeToolTip": "DAL\\DBServices.cs",
+              "ViewState": "AgIAAFIAAAAAAAAAAAAowG8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T21:51:36.711Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "RatingDAL.cs",
+              "DocumentMoniker": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\DAL\\RatingDAL.cs",
+              "RelativeDocumentMoniker": "DAL\\RatingDAL.cs",
+              "ToolTip": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\DAL\\RatingDAL.cs",
+              "RelativeToolTip": "DAL\\RatingDAL.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAowCQAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T21:49:48.572Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Rating.cs",
+              "DocumentMoniker": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\BL\\Rating.cs",
+              "RelativeDocumentMoniker": "BL\\Rating.cs",
+              "ToolTip": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\BL\\Rating.cs",
+              "RelativeToolTip": "BL\\Rating.cs",
+              "ViewState": "AgIAAB0AAAAAAAAAAAAIwCMAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T21:49:29.141Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Event.cs",
+              "DocumentMoniker": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\BL\\Event.cs",
+              "RelativeDocumentMoniker": "BL\\Event.cs",
+              "ToolTip": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\BL\\Event.cs",
+              "RelativeToolTip": "BL\\Event.cs",
+              "ViewState": "AgIAACIAAAAAAAAAAAAQwDYAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T20:47:19.039Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T20:12:43.006Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "RatingsController.cs",
+              "DocumentMoniker": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\Controllers\\RatingsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\RatingsController.cs",
+              "ToolTip": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\Controllers\\RatingsController.cs",
+              "RelativeToolTip": "Controllers\\RatingsController.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABkAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T20:12:25.386Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "LocationsController.cs",
+              "DocumentMoniker": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\Controllers\\LocationsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\LocationsController.cs",
+              "ToolTip": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\Controllers\\LocationsController.cs",
+              "RelativeToolTip": "Controllers\\LocationsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T20:12:02.54Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "EventsController.cs",
+              "DocumentMoniker": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\Controllers\\EventsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\EventsController.cs",
+              "ToolTip": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\Controllers\\EventsController.cs",
+              "RelativeToolTip": "Controllers\\EventsController.cs",
+              "ViewState": "AgIAAFAAAAAAAAAAAAAIwGYAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T20:11:24.095Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "UsersController.cs",
+              "DocumentMoniker": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\Controllers\\UsersController.cs",
+              "RelativeDocumentMoniker": "Controllers\\UsersController.cs",
+              "ToolTip": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\Controllers\\UsersController.cs",
+              "RelativeToolTip": "Controllers\\UsersController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T20:10:25.64Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Location.cs",
+              "DocumentMoniker": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\BL\\Location.cs",
+              "RelativeDocumentMoniker": "BL\\Location.cs",
+              "ToolTip": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2\\02-SERVER\\GroundShareAPI\\BL\\Location.cs",
+              "RelativeToolTip": "BL\\Location.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAmwC0AAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T20:08:04.325Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

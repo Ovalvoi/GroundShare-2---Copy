@@ -1,0 +1,6 @@
+@GroundShareAPI_HostAddress = http://localhost:5034
+
+GET {{GroundShareAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

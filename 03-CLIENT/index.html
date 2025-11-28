@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroundShare</title>
+
+    <!-- Bootstrap 5 CSS (RTL Version for Hebrew) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#"><i class="fas fa-layer-group me-2"></i>GroundShare</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navLinks">
+                    <!-- Links will be injected via JS based on login status -->
+                </ul>
+                <div class="d-flex text-white align-items-center">
+                    <span id="userInfo" class="me-3"></span>
+                    <button id="logoutBtn" class="btn btn-outline-light btn-sm d-none">התנתק</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container my-5">
+
+        <!-- SECTION: LOGIN -->
+        <div id="loginSection" class="row justify-content-center section-view">
+            <div class="col-md-5">
+                <div class="card shadow-lg border-0 rounded-4">
+                    <div class="card-body p-5">
+                        <h2 class="text-center mb-4 text-primary fw-bold">כניסה למערכת</h2>
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label class="form-label">אימייל</label>
+                                <input type="email" id="loginEmail" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">סיסמה</label>
+                                <input type="password" id="loginPassword" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 btn-lg rounded-pill">התחבר</button>
+                        </form>
+                        <div class="text-center mt-3">
+                            <small>אין לך חשבון? <a href="#" id="goRegister">הירשם כאן</a></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: REGISTER -->
+        <div id="registerSection" class="row justify-content-center section-view d-none">
+            <div class="col-md-6">
+                <div class="card shadow border-0 rounded-4">
+                    <div class="card-body p-5">
+                        <h2 class="text-center mb-4 text-primary">הרשמה</h2>
+                        <form id="registerForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label>שם פרטי</label>
+                                    <input type="text" id="regFirst" class="form-control" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label>שם משפחה</label>
+                                    <input type="text" id="regLast" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label>אימייל</label>
+                                <input type="email" id="regEmail" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label>סיסמה</label>
+                                <input type="password" id="regPass" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label>תאריך לידה</label>
+                                <input type="date" id="regDob" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label>טלפון</label>
+                                <input type="tel" id="regPhone" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label>כתובת</label>
+                                <input type="text" id="regAddress" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100 rounded-pill">הירשם</button>
+                            <div class="text-center mt-3">
+                                <small>יש לך חשבון? <a href="#" id="goLogin">התחבר כאן</a></small>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: EVENTS FEED -->
+        <div id="feedSection" class="section-view d-none">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold border-bottom border-primary border-3 pb-1">אירועים אחרונים</h2>
+                <button id="showAddEventBtn" class="btn btn-primary rounded-pill"><i class="fas fa-plus me-2"></i>הוסף
+                    אירוע</button>
+            </div>
+
+            <div id="eventsContainer" class="row g-4">
+                <!-- Events will be injected here via JS -->
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: ADD EVENT -->
+        <div id="addEventSection" class="row justify-content-center section-view d-none">
+            <div class="col-md-8">
+                <div class="card shadow border-0">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">דיווח על אירוע חדש</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="addEventForm">
+                            <div class="mb-3">
+                                <label>סוג האירוע</label>
+                                <select id="eventType" class="form-select" required>
+                                    <option value="עבודת תשתית">עבודת תשתית</option>
+                                    <option value="חסימת כביש">חסימת כביש</option>
+                                    <option value="פינוי בינוי">פינוי בינוי</option>
+                                    <option value="תמ&quot;א 38">תמ&quot;א 38</option>
+                                    <option value="הפסקת חשמל">הפסקת חשמל</option>
+                                </select>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label>תאריך התחלה</label>
+                                    <input type="datetime-local" id="eventStart" class="form-control" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label>תאריך סיום (אופציונלי)</label>
+                                    <input type="datetime-local" id="eventEnd" class="form-control">
+                                </div>
+                            </div>
+
+                            <!-- UPDATED: Location Selection with Add Button -->
+                            <div class="mb-3">
+                                <label class="form-label">מיקום</label>
+                                <div class="input-group">
+                                    <select id="eventLocation" class="form-select" required>
+                                        <option value="">טוען מיקומים...</option>
+                                    </select>
+                                    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal"
+                                        data-bs-target="#addLocationModal">
+                                        <i class="fas fa-plus"></i> מיקום חדש
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label>תיאור</label>
+                                <textarea id="eventDesc" class="form-control" rows="3" required></textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label>רשות מקומית</label>
+                                    <input type="text" id="eventMuni" class="form-control" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label>גוף אחראי</label>
+                                    <input type="text" id="eventBody" class="form-control" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label>סטטוס</label>
+                                <select id="eventStatus" class="form-select" required>
+                                    <option value="קרה">קרה (הסתיים)</option>
+                                    <option value="קורה">קורה (פעיל כעת)</option>
+                                    <option value="יקרה">יקרה (עתידי)</option>
+                                </select>
+                            </div>
+
+                            <!-- FILE UPLOAD INPUT -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">תמונה (חובה)</label>
+                                <input type="file" id="eventImage" class="form-control" accept="image/*" required>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" id="cancelAddEvent">ביטול</button>
+                                <button type="submit" class="btn btn-primary px-5">שמור ופרסם</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- NEW: Modal for Adding Location -->
+    <div class="modal fade" id="addLocationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">הוספת מיקום חדש</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newLocationForm">
+                        <div class="mb-3">
+                            <label class="form-label">עיר / מושב / קיבוץ</label>
+                            <input type="text" id="locCity" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">רחוב</label>
+                            <input type="text" id="locStreet" class="form-control" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">מספר בית</label>
+                                <input type="text" id="locNum" class="form-control" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label">סוג מבנה</label>
+                                <select id="locType" class="form-select">
+                                    <option value="בניין">בניין</option>
+                                    <option value="בית פרטי">בית פרטי</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">קומה (אופציונלי)</label>
+                            <input type="number" id="locFloor" class="form-control">
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">שמור מיקום</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REVIEWS MODAL -->
+    <div class="modal fade" id="reviewsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">תגובות משתמשים</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-light">
+                    <ul id="reviewsList" class="list-group list-group-flush rounded shadow-sm">
+                        <!-- Reviews injected here by JS -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- App Scripts -->
+    <script src="js/users.js"></script>
+    <script src="js/locations.js"></script>
+    <script src="js/events.js"></script>
+    <script src="js/index.js"></script>
+</body>
+
+</html>
+
+<!-- NEW: Rating Modal -->
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title fw-bold"><i class="fas fa-star me-2"></i>דירוג אירוע</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="ratingForm">
+                    <input type="hidden" id="ratingEventId">
+
+                    <div class="row text-center mb-4">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">ציון כללי</label>
+                            <div class="star-rating" data-input="rateOverall">
+                                <i class="far fa-star" data-val="1"></i><i class="far fa-star" data-val="2"></i><i
+                                    class="far fa-star" data-val="3"></i><i class="far fa-star" data-val="4"></i><i
+                                    class="far fa-star" data-val="5"></i>
+                            </div>
+                            <input type="hidden" id="rateOverall" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">רמת רעש</label>
+                            <div class="star-rating" data-input="rateNoise">
+                                <i class="far fa-star" data-val="1"></i><i class="far fa-star" data-val="2"></i><i
+                                    class="far fa-star" data-val="3"></i><i class="far fa-star" data-val="4"></i><i
+                                    class="far fa-star" data-val="5"></i>
+                            </div>
+                            <input type="hidden" id="rateNoise" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">עומס תנועה</label>
+                            <div class="star-rating" data-input="rateTraffic">
+                                <i class="far fa-star" data-val="1"></i><i class="far fa-star" data-val="2"></i><i
+                                    class="far fa-star" data-val="3"></i><i class="far fa-star" data-val="4"></i><i
+                                    class="far fa-star" data-val="5"></i>
+                            </div>
+                            <input type="hidden" id="rateTraffic" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">תחושת ביטחון</label>
+                            <div class="star-rating" data-input="rateSafety">
+                                <i class="far fa-star" data-val="1"></i><i class="far fa-star" data-val="2"></i><i
+                                    class="far fa-star" data-val="3"></i><i class="far fa-star" data-val="4"></i><i
+                                    class="far fa-star" data-val="5"></i>
+                            </div>
+                            <input type="hidden" id="rateSafety" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">הערה (אופציונלי)</label>
+                        <textarea id="rateComment" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-warning fw-bold">שלח דירוג</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- App Scripts -->
+<script src="js/users.js"></script>
+<script src="js/locations.js"></script>
+<script src="js/events.js"></script>
+<script src="js/ratings.js"></script> <!-- ADD THIS LINE -->
+<script src="js/index.js"></script>
+</body>
+
+</html>
