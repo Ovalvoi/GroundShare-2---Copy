@@ -20,19 +20,5 @@ namespace GroundShare.BL
 
         public Rating() { }
 
-        // Insert
-        public int Insert()
-        {
-            RatingsDAL dal = new RatingsDAL();
-            return dal.InsertRating(
-                this.UserId,
-                this.EventsId,
-                this.OverallScore,
-                this.NoiseScore,
-                this.TrafficScore,
-                this.SafetyScore,
-                this.Comment
-            );
-        }
     }
 }
