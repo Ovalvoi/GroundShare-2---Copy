@@ -18,5 +18,18 @@ namespace GroundShare.BL
         public bool IsAdmin { get; set; }
         public User() { }
 
+        public int Register()
+        {
+            UsersDAL dal = new UsersDAL();
+            return dal.RegisterUser(this);
+        }
+        public User Login(string email, string password)
+        {
+            UsersDAL dal = new UsersDAL();
+            return dal.Login(email, password);
+        }
+
+
+
     }
 }
