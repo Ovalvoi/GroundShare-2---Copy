@@ -1,8 +1,6 @@
 ﻿using GroundShare.DAL;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Data;
 
 namespace GroundShare.BL
 {
@@ -18,7 +16,22 @@ namespace GroundShare.BL
         public string Comment { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        public Rating() { }
+        public Rating()
+        {
+        }
 
+        // הוספת דירוג חדש דרך ה־DAL
+        public int Add()
+        {
+            RatingsDAL dal = new RatingsDAL();
+            return dal.AddRating(this);
+        }
+
+        // שליפת כל הדירוגים של אירוע מסוים
+        public static List<Rating> GetByEvent(int eventId)
+        {
+            RatingsDAL dal = new RatingsDAL();
+            return dal.GetRatingsByEvent(eventId);
+        }
     }
 }

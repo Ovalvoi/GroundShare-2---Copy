@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using GroundShare.DAL;
 
 namespace GroundShare.BL
@@ -14,7 +13,20 @@ namespace GroundShare.BL
         public string HouseType { get; set; }
         public int? Floor { get; set; }
 
-        public Location() { }
+        public Location()
+        {
+        }
 
+        public int Add()
+        {
+            LocationsDAL dal = new LocationsDAL();
+            return dal.AddLocation(this);
+        }
+
+        public static List<Location> GetAll()
+        {
+            LocationsDAL dal = new LocationsDAL();
+            return dal.GetAllLocations();
+        }
     }
 }

@@ -23,13 +23,10 @@ namespace GroundShare.BL
             UsersDAL dal = new UsersDAL();
             return dal.RegisterUser(this);
         }
-        public User Login(string email, string password)
+        public static User Login(string email, string password)
         {
             UsersDAL dal = new UsersDAL();
             return dal.Login(email, password);
         }
-
-
-
     }
 }

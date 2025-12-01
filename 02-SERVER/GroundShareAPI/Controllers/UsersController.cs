@@ -55,7 +55,7 @@ namespace GroundShare.Controllers
 
                 // User.Login(email, password) → משתמש ב-UsersDAL.Login
                 //User loggedUser = User.Login(user.Email, user.Password);
-                GroundShare.BL.User loggedUser = GroundShare.BL.User.Login(user.Email, user.Password);
+                User loggedUser = BL.User.Login(user.Email, user.Password);
 
 
                 if (loggedUser == null)
@@ -72,7 +72,3 @@ namespace GroundShare.Controllers
         }
     }
 }
-
-
-
-
