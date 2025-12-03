@@ -1,45 +1,9 @@
 [
   {
     "ContainingType": "GroundShare.Controllers.EventsController",
-    "Method": "Get",
-    "RelativePath": "api/Events",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[GroundShare.BL.Event, GroundShareAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "GroundShare.Controllers.EventsController",
-    "Method": "Post",
-    "RelativePath": "api/Events",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "eventObj",
-        "Type": "GroundShare.BL.Event",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "GroundShare.Controllers.EventsController",
-    "Method": "Put",
+    "Method": "GetEventById",
     "RelativePath": "api/Events/{id}",
-    "HttpMethod": "PUT",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
@@ -47,9 +11,30 @@
         "Name": "id",
         "Type": "System.Int32",
         "IsRequired": true
-      },
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GroundShare.Controllers.EventsController",
+    "Method": "GetAllEvents",
+    "RelativePath": "api/Events/all",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GroundShare.Controllers.EventsController",
+    "Method": "CreateEvent",
+    "RelativePath": "api/Events/create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
       {
-        "Name": "eventObj",
+        "Name": "ev",
         "Type": "GroundShare.BL.Event",
         "IsRequired": true
       }
@@ -58,8 +43,8 @@
   },
   {
     "ContainingType": "GroundShare.Controllers.EventsController",
-    "Method": "Delete",
-    "RelativePath": "api/Events/{id}",
+    "Method": "DeleteEvent",
+    "RelativePath": "api/Events/delete/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -74,44 +59,29 @@
   },
   {
     "ContainingType": "GroundShare.Controllers.EventsController",
-    "Method": "Upload",
-    "RelativePath": "api/Events/upload",
-    "HttpMethod": "POST",
+    "Method": "UpdateEvent",
+    "RelativePath": "api/Events/update/{id}",
+    "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "file",
-        "Type": "Microsoft.AspNetCore.Http.IFormFile",
-        "IsRequired": false
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "ev",
+        "Type": "GroundShare.BL.Event",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
     "ContainingType": "GroundShare.Controllers.LocationsController",
-    "Method": "Get",
-    "RelativePath": "api/Locations",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[GroundShare.BL.Location, GroundShareAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "GroundShare.Controllers.LocationsController",
-    "Method": "Post",
-    "RelativePath": "api/Locations",
+    "Method": "AddLocation",
+    "RelativePath": "api/Locations/add",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -125,9 +95,19 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "GroundShare.Controllers.LocationsController",
+    "Method": "GetAllLocations",
+    "RelativePath": "api/Locations/all",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "GroundShare.Controllers.RatingsController",
-    "Method": "Post",
-    "RelativePath": "api/Ratings",
+    "Method": "AddRating",
+    "RelativePath": "api/Ratings/add",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -142,8 +122,8 @@
   },
   {
     "ContainingType": "GroundShare.Controllers.RatingsController",
-    "Method": "GetByEvent",
-    "RelativePath": "api/Ratings/event/{eventId}",
+    "Method": "GetRatingsByEvent",
+    "RelativePath": "api/Ratings/byEvent/{eventId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -165,7 +145,7 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "loginDetails",
+        "Name": "user",
         "Type": "GroundShare.BL.User",
         "IsRequired": true
       }

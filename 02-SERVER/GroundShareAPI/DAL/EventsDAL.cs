@@ -240,5 +240,3 @@ namespace GroundShare.DAL
         }
     }
 }
-
-

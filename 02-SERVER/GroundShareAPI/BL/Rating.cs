@@ -19,15 +19,12 @@ namespace GroundShare.BL
         public Rating()
         {
         }
-
-        // הוספת דירוג חדש דרך ה־DAL
         public int Add()
         {
             RatingsDAL dal = new RatingsDAL();
             return dal.AddRating(this);
         }
 
-        // שליפת כל הדירוגים של אירוע מסוים
         public static List<Rating> GetByEvent(int eventId)
         {
             RatingsDAL dal = new RatingsDAL();

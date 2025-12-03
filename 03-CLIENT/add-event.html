@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroundShare - הוספת אירוע</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="fa-solid fa-location-dot me-2"></i>
+                GroundShare
+            </a>
+
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#mainNavbar"
+                    aria-controls="mainNavbar"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            דף הבית
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="add-event.html">
+                            הוספת אירוע
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">
+                            התחברות
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="register.html">
+                            הרשמה
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-7">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+
+                        <h1 class="h4 mb-4 text-center">
+                            הוספת אירוע חדש
+                        </h1>
+
+                        <form id="addEventForm" novalidate>
+
+                             <!-- מיקום קיים -->
+                            <div class="mb-3">
+                                <label for="locationSelect" class="form-label">מיקום</label>
+                                <select class="form-select"
+                                        id="locationSelect"
+                                        name="locationId"
+                                        required>
+                                    <option value="" selected disabled>בחר מיקום מהרשימה</option>
+                                    <!-- ימולא דינאמית מהשרת -->
+                                </select>
+                                <div class="form-text">
+                                    המיקום נמשך מרשימת המיקומים במערכת, תוכל לבחור מתוך הרשימה
+                                </div>
+                            </div>
+
+                            <!-- כפתור פתיחת טופס מיקום חדש -->
+                            <div class="mb-3">
+                                <button type="button"
+                                        class="btn btn-outline-secondary btn-sm"
+                                        id="toggleNewLocationBtn">
+                                    הוספת מיקום חדש
+                                </button>
+                            </div>
+
+                            <!-- טופס מיקום חדש, יוצג רק בעתיד עם JS -->
+                            <div id="newLocationSection" class="border rounded p-3 mb-4 d-none">
+                                <h2 class="h6 mb-3">הוספת מיקום חדש</h2>
+
+                                <div class="row">
+                                    <div class="mb-3 col-md-6">
+                                        <label for="newCity" class="form-label">עיר</label>
+                                        <input type="text"
+                                               class="form-control"
+                                               id="newCity"
+                                               name="newCity"
+                                               placeholder="למשל, תל אביב יפו">
+                                    </div>
+
+                                    <div class="mb-3 col-md-6">
+                                        <label for="newStreet" class="form-label">רחוב</label>
+                                        <input type="text"
+                                               class="form-control"
+                                               id="newStreet"
+                                               name="newStreet"
+                                               placeholder="למשל, שדרות רוטשילד">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="mb-3 col-md-4">
+                                        <label for="newHouseNumber" class="form-label">מספר בית</label>
+                                        <input type="text"
+                                               class="form-control"
+                                               id="newHouseNumber"
+                                               name="newHouseNumber"
+                                               placeholder="למשל, 15">
+                                    </div>
+
+                                    <div class="mb-3 col-md-4">
+                                        <label for="newBuildingType" class="form-label">סוג בית</label>
+                                        <select class="form-select"
+                                                id="newBuildingType"
+                                                name="newBuildingType">
+                                            <option value="" selected disabled>בחר סוג מבנה</option>
+                                            <option value="בניין">בניין</option>
+                                            <option value="בית פרטי">בית פרטי</option>
+                                            <option value="מבנה מסחרי">מבנה מסחרי</option>
+                                            <option value="מבנה ציבורי">מבנה ציבורי</option>
+                                            <option value="אחר">אחר</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3 col-md-4">
+                                        <label for="newFloor" class="form-label">קומה</label>
+                                        <input type="number"
+                                               class="form-control"
+                                               id="newFloor"
+                                               name="newFloor"
+                                               placeholder="אם יש">
+                                    </div>
+                                </div>
+
+                                <div id="newLocationMessage" class="small mb-2"></div>
+
+                                <button type="button"
+                                        class="btn btn-outline-primary btn-sm"
+                                        id="addLocationBtn">
+                                    הוסף מיקום חדש למערכת
+                                </button>
+                            </div>
+
+                            <!-- כותרת האירוע -->
+                            <div class="mb-3">
+                                <label for="eventTitle" class="form-label">כותרת האירוע</label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="eventTitle"
+                                       name="eventTitle"
+                                       placeholder="למשל, עבודות בכביש ברחוב ויצמן">
+                            </div>
+
+                            <!-- סוג האירוע -->
+                            <div class="mb-3">
+                                <label for="eventType" class="form-label">סוג האירוע</label>
+                                <select class="form-select"
+                                        id="eventType"
+                                        name="eventType"
+                                        required>
+                                    <option value="" selected disabled>בחר סוג אירוע</option>
+                                    <option value="עבודת תשתית">עבודת תשתית</option>
+                                    <option value="חסימת כביש">חסימת כביש</option>
+                                    <option value="הפסקת חשמל">הפסקת חשמל</option>
+                                    <option value="תמ״א 38">תמ״א 38</option>
+                                    <option value="פינוי בינוי">פינוי בינוי</option>
+                                    <option value="אחר">אחר</option>
+                                </select>
+                            </div>
+
+                            <!-- תאריכים -->
+                            <div class="row">
+                                <div class="mb-3 col-md-6">
+                                    <label for="startDate" class="form-label">תאריך התחלה</label>
+                                    <input type="datetime-local"
+                                           class="form-control"
+                                           id="startDate"
+                                           name="startDate"
+                                           required>
+                                </div>
+
+                                <div class="mb-3 col-md-6">
+                                    <label for="endDate" class="form-label">תאריך סיום</label>
+                                    <input type="datetime-local"
+                                           class="form-control"
+                                           id="endDate"
+                                           name="endDate">
+                                </div>
+                            </div>
+
+                            <!-- Municipality -->
+                            <div class="mb-3">
+                                <label for="municipality" class="form-label">רשות מקומית</label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="municipality"
+                                       name="municipality"
+                                       placeholder="למשל, עיריית תל אביב יפו">
+                            </div>
+
+                            <!-- Responsible Body -->
+                            <div class="mb-3">
+                                <label for="responsibleBody" class="form-label">גורם אחראי</label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="responsibleBody"
+                                       name="responsibleBody"
+                                       placeholder="למשל, חברת החשמל או קבלן מבצע">
+                            </div>
+
+                            <!-- Event Status -->
+                            <div class="mb-4">
+                                <label for="eventStatus" class="form-label">סטטוס האירוע</label>
+                                <select class="form-select"
+                                        id="eventStatus"
+                                        name="eventStatus"
+                                        required>
+                                    <option value="" selected disabled>בחר סטטוס</option>
+                                    <option value="קרה">קרה</option>
+                                    <option value="קורה">קורה</option>
+                                    <option value="יקרה">יקרה</option>
+                                </select>
+                                <div class="form-text">
+                                    האם האירוע כבר קרה, מתרחש עכשיו או עתידי
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <!-- דירוגים -->
+                            <h2 class="h6 mb-3">דירוג האירוע</h2>
+
+                            <!-- דירוג רעש -->
+                            <div class="mb-3">
+                                <label for="noiseScore" class="form-label">דירוג רעש</label>
+                                <select class="form-select"
+                                        id="noiseScore"
+                                        name="noiseScore"
+                                        required>
+                                    <option value="" selected disabled>בחר רמת רעש</option>
+                                    <option value="1">1 - כמעט לא שומעים</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3 - רעש מורגש</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5 - רעש חזק מאוד</option>
+                                </select>
+                                <div class="form-text">
+                                    עד כמה האירוע יוצר רעש שמפריע לשגרה
+                                </div>
+                            </div>
+
+                            <!-- דירוג הפרעה לתנועה -->
+                            <div class="mb-3">
+                                <label for="trafficScore" class="form-label">דירוג הפרעה לתנועה</label>
+                                <select class="form-select"
+                                        id="trafficScore"
+                                        name="trafficScore"
+                                        required>
+                                    <option value="" selected disabled>בחר רמת הפרעה לתנועה</option>
+                                    <option value="1">1 - כמעט לא מפריע לתנועה</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3 - הפרעה מורגשת</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5 - חוסם כביש או מדרכה</option>
+                                </select>
+                                <div class="form-text">
+                                    האם האירוע חוסם כביש, מדרכה או מקשה מאוד על מעבר
+                                </div>
+                            </div>
+
+                            <!-- דירוג בטיחות -->
+                            <div class="mb-3">
+                                <label for="safetyScore" class="form-label">דירוג בטיחות</label>
+                                <select class="form-select"
+                                        id="safetyScore"
+                                        name="safetyScore"
+                                        required>
+                                    <option value="" selected disabled>בחר רמת סיכון בטיחותי</option>
+                                    <option value="1">1 - ללא סיכון ממשי</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3 - מפגע שדורש תשומת לב</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5 - מפגע מסוכן מאוד</option>
+                                </select>
+                                <div class="form-text">
+                                    עד כמה המפגע מסוכן מבחינה בטיחותית לתושבים או לעוברים במקום
+                                </div>
+                            </div>
+
+                            <!-- תיאור האירוע -->
+                            <div class="mb-3">
+                                <label for="description" class="form-label">תיאור האירוע</label>
+                                <textarea class="form-control"
+                                          id="description"
+                                          name="description"
+                                          rows="3"
+                                          placeholder="פרטים שיעזרו לשכנים להבין מה צפוי לקרות"></textarea>
+                            </div>
+
+                            <div id="addEventMessage" class="small mb-3"></div>
+
+                            <!-- כפתור יצירת האירוע -->
+                            <button type="submit"
+                                    class="btn btn-primary w-100">
+                                יצירת אירוע
+                            </button>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts בסיסיים ל Bootstrap, JS אפליקציה נוסיף בהמשך -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+         <script src="/03-CLIENT/js/events.js"></script> 
+
+</body>
+</html>
