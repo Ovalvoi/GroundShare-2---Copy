@@ -7,68 +7,50 @@ namespace GroundShare.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-            // ------------------------------------------------------
-            // POST api/user/register
-            // רישום משתמש חדש דרך user.Register()
-            // ------------------------------------------------------
-            [HttpPost("register")]
-            public IActionResult Register([FromBody] User user)
-            {
-                try
-                {
-                    if (user == null)
-                    {
-                        return BadRequest("User data is null.");
-                    }
-
-                    // user.RegisteRegister();r() קורא ל-UsersDAL.RegisterUser(user)
-                    int result = user.Register();
-
-                    if (result == -1)
-                    {
-                        return Conflict("Email already exists.");
-                    }
-
-                    return Ok(new { UserId = result, Message = "User registered successfully." });
-                }
-                catch (Exception)
-                {
-                    return StatusCode(500, "Internal server error while registering user.");
-                }
-            }
-
         // ------------------------------------------------------
-        //POST api/user/login
-        //התחברות משתמש – מקבל User עם Email + Password בלבד
+        // POST api/Users/login
+        // התחברות לפי המבנה מהפרויקט העובד
         // ------------------------------------------------------
-            [HttpPost("login")]
-        public IActionResult Login([FromBody] User user)
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] User loginDetails)
         {
-            try
+            // בדיקה בסיסית שאכן נשלחו נתונים
+            if (loginDetails == null || string.IsNullOrEmpty(loginDetails.Email) || string.IsNullOrEmpty(loginDetails.Password))
             {
-                if (user == null ||
-                    string.IsNullOrWhiteSpace(user.Email) ||
-                    string.IsNullOrWhiteSpace(user.Password))
-                {
-                    return BadRequest("Email or password is missing.");
-                }
-
-                // User.Login(email, password) → משתמש ב-UsersDAL.Login
-                //User loggedUser = User.Login(user.Email, user.Password);
-                User loggedUser = BL.User.Login(user.Email, user.Password);
-
-
-                if (loggedUser == null)
-                {
-                    return Unauthorized("Invalid email or password.");
-                }
-
-                return Ok(loggedUser);
+                return BadRequest("Email and Password are required.");
             }
-            catch (Exception)
+
+            // יצירת מופע ריק כדי לקרוא לפונקציה (ממש כמו בדוגמה שלך)
+            User userHelper = new User();
+            User userFromServer = userHelper.Login(loginDetails.Email, loginDetails.Password);
+
+            if (userFromServer != null)
             {
-                return StatusCode(500, "Internal server error while logging in.");
+                return Ok(userFromServer);
             }
+
+            return Unauthorized("Incorrect email or password"); // 401
+        }
+
+        // ------------------------------------------------------
+        // POST api/Users/register
+        // הרשמה לפי המבנה מהפרויקט העובד
+        // ------------------------------------------------------
+        [HttpPost("register")]
+        public IActionResult Register([FromBody] User user)
+        {
+            if (user == null) return BadRequest("No user data provided");
+
+            // קריאה לפונקציה Insert של המודל
+            int newId = user.Insert();
+
+            if (newId == -1)
+            {
+                return Conflict("Email already exists"); // 409
+            }
+
+            // החזרת אובייקט עם המידע כדי שהקליינט יוכל להשתמש בזה
+            return Ok(new { UserId = newId, Message = "User registered successfully" });
         }
     }
 }

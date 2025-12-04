@@ -1,178 +1,103 @@
 ﻿using GroundShare.BL;
-using GroundShare.DAL;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace GroundShare.Controllers
 {
+    // קונטרולר לניהול אירועים והעלאת קבצים
     [Route("api/[controller]")]
     [ApiController]
     public class EventsController : ControllerBase
     {
-        // שליפת כל האירועים לפיד הראשי
+        // משתנה לקבלת מידע על סביבת השרת (נתיבים וכו')
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        public EventsController(IWebHostEnvironment webHostEnvironment)
+        {
+            _webHostEnvironment = webHostEnvironment;
+        }
+
+        // ---------------------------------------------------------------------------------
+        // שליפת כל האירועים (GET api/Events/all)
+        // ---------------------------------------------------------------------------------
         [HttpGet("all")]
         public IActionResult GetAllEvents()
         {
-            try
-            {
-                EventsDAL dal = new EventsDAL();
-                List<Event> events = dal.GetAllEvents();
-
-                return Ok(events);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal server error while fetching events");
-            }
+            return Ok(Event.GetAll());
         }
 
-        // שליפת אירוע בודד לפי ID
+        // ---------------------------------------------------------------------------------
+        // שליפת אירוע לפי ID (GET api/Events/{id})
+        // ---------------------------------------------------------------------------------
         [HttpGet("{id}")]
         public IActionResult GetEventById(int id)
         {
-            try
-            {
-                if (id <= 0)
-                {
-                    return BadRequest("Invalid event id");
-                }
-
-                EventsDAL dal = new EventsDAL();
-                Event ev = dal.GetEventById(id);
-
-                if (ev == null)
-                {
-                    return NotFound("Event not found");
-                }
-
-                return Ok(ev);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal server error while fetching event");
-            }
+            Event ev = Event.GetById(id);
+            if (ev == null) return NotFound("Event not found");
+            return Ok(ev);
         }
 
-        // יצירת אירוע חדש
+        // ---------------------------------------------------------------------------------
+        // יצירת אירוע חדש (POST api/Events/create)
+        // ---------------------------------------------------------------------------------
         [HttpPost("create")]
         public IActionResult CreateEvent([FromBody] Event ev)
         {
-            try
-            {
-                if (ev == null)
-                {
-                    return BadRequest("Event data is null");
-                }
-
-                // בדיקות בסיסיות על שדות חובה
-                if (ev.StartDateTime == default
-                    || string.IsNullOrWhiteSpace(ev.EventsType)
-                    || string.IsNullOrWhiteSpace(ev.Description)
-                    || string.IsNullOrWhiteSpace(ev.Municipality)
-                    || string.IsNullOrWhiteSpace(ev.ResponsibleBody)
-                    || string.IsNullOrWhiteSpace(ev.EventsStatus)
-                    || ev.LocationsId <= 0)
-                {
-                    return BadRequest("One or more required fields are missing or invalid");
-                }
-
-                EventsDAL dal = new EventsDAL();
-                int newId = dal.CreateEvent(ev);
-
-                if (newId <= 0)
-                {
-                    return StatusCode(500, "Failed to create event");
-                }
-
-                ev.EventsId = newId;
-
-                return Ok(new
-                {
-                    EventsId = newId,
-                    Message = "Event created successfully"
-                });
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal server error while creating event");
-            }
+            if (ev == null) return BadRequest("Data is null");
+            int id = ev.Create();
+            if (id <= 0) return StatusCode(500, "Failed to create event");
+            return Ok(new { EventsId = id, Message = "Created successfully" });
         }
 
-        // עדכון אירוע קיים – מעדכן רק EventsType, Description, EventsStatus
-        [HttpPut("update/{id}")]
-        public IActionResult UpdateEvent(int id, [FromBody] Event ev)
-        {
-            try
-            {
-                if (id <= 0)
-                {
-                    return BadRequest("Invalid event id");
-                }
-
-                if (ev == null)
-                {
-                    return BadRequest("Event data is null");
-                }
-
-                // לוודא שה־EventsId בגוף מתאים ל־id ב־Route (אם בכלל הגיע)
-                ev.EventsId = id;
-
-                if (string.IsNullOrWhiteSpace(ev.EventsType)
-                    || string.IsNullOrWhiteSpace(ev.Description)
-                    || string.IsNullOrWhiteSpace(ev.EventsStatus))
-                {
-                    return BadRequest("One or more required fields are missing");
-                }
-
-                EventsDAL dal = new EventsDAL();
-                bool updated = dal.UpdateEvent(ev);
-
-                if (!updated)
-                {
-                    return NotFound("Event not found or not updated");
-                }
-
-                return Ok(new
-                {
-                    EventsId = id,
-                    Message = "Event updated successfully"
-                });
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal server error while updating event");
-            }
-        }
-
-        // מחיקת אירוע + מחיקת כל הדירוגים שלו
+        // ---------------------------------------------------------------------------------
+        // מחיקת אירוע (DELETE api/Events/delete/{id})
+        // ---------------------------------------------------------------------------------
         [HttpDelete("delete/{id}")]
         public IActionResult DeleteEvent(int id)
         {
+            if (Event.Delete(id))
+                return Ok(new { Message = "Deleted successfully" });
+            return NotFound("Event not found");
+        }
+
+        // ---------------------------------------------------------------------------------
+        // העלאת תמונה (POST api/Events/upload)
+        // שומר את הקובץ בתיקיית wwwroot/images ומחזיר את הנתיב היחסי
+        // ---------------------------------------------------------------------------------
+        [HttpPost("upload")]
+        public IActionResult Upload(IFormFile file)
+        {
+            if (file == null || file.Length == 0) return BadRequest("No file uploaded.");
+
             try
             {
-                if (id <= 0)
+                // יצירת שם קובץ ייחודי באמצעות GUID
+                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+
+                // נתיב התיקייה בשרת
+                string imagesFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+
+                // יצירת התיקייה אם אינה קיימת
+                if (!Directory.Exists(imagesFolder))
+                    Directory.CreateDirectory(imagesFolder);
+
+                // שמירת הקובץ הפיזי
+                string filePath = Path.Combine(imagesFolder, fileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    return BadRequest("Invalid event id");
+                    file.CopyTo(stream);
                 }
 
-                EventsDAL dal = new EventsDAL();
-                bool deleted = dal.DeleteEvent(id);
-
-                if (!deleted)
-                {
-                    return NotFound("Event not found or already deleted");
-                }
-
-                return Ok(new
-                {
-                    EventsId = id,
-                    Message = "Event deleted successfully"
-                });
+                // החזרת הנתיב היחסי לשמירה ב-DB
+                return Ok(new { path = "images/" + fileName });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "Internal server error while deleting event");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     }

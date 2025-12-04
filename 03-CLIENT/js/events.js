@@ -1,326 +1,228 @@
-// כתובת הבסיס ל־API, תעדכן פורט לפי מה שרץ אצלך
-const API_BASE_URL = 'https://localhost:7057/api'
+// הגדרת קבועים לכתובות ה-API
+const API_PORT = 7057;
+const API_BASE_URL = `https://localhost:${API_PORT}/api`;
+const API_URL_EVENTS = `${API_BASE_URL}/Events`;
+const API_URL_RATINGS = `${API_BASE_URL}/Ratings`;
 
-// כשדף add-event נטען
+// ---------------------------------------------------------
+// פונקציית אתחול - רצה כשהדף (DOM) נטען במלואו
+// ---------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
+    
+    // 1. בדיקה האם יש משתמש מחובר
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+        alert('עליך להתחבר כדי להוסיף אירוע');
+        window.location.href = 'login.html';
+        return;
+    }
 
-    const form = document.querySelector('#addEventForm')
-    const toggleNewLocationBtn = document.querySelector('#toggleNewLocationBtn')
-    const addLocationBtn = document.querySelector('#addLocationBtn')
+    // 2. עדכון ה-Navbar (הצגת שם משתמש וכפתור התנתקות)
+    if (typeof updateNavbarState === 'function') {
+        updateNavbarState();
+    }
 
-    // חיבור טופס יצירת אירוע
+    // 3. טעינת רשימת המיקומים לתוך ה-Dropdown (מ-locations.js)
+    if (typeof loadLocationsForSelect === 'function') {
+        loadLocationsForSelect();
+    }
+
+    // 4. חיבור פונקציית השליחה לטופס
+    const form = document.querySelector('#addEventForm');
     if (form) {
-        form.addEventListener('submit', onAddEventSubmit)
+        form.addEventListener('submit', onAddEventSubmit);
     }
 
-    // חיבור כפתור פתיחת / סגירת טופס מיקום חדש
-    if (toggleNewLocationBtn) {
-        toggleNewLocationBtn.addEventListener('click', toggleNewLocationSection)
+    // 5. ניהול כפתורי הוספת מיקום (הצגה/הסתרה של הטופס המשני)
+    const toggleLocBtn = document.querySelector('#toggleNewLocationBtn');
+    const addLocBtn = document.querySelector('#addLocationBtn');
+
+    if (toggleLocBtn) {
+        toggleLocBtn.addEventListener('click', () => {
+            document.querySelector('#newLocationSection').classList.toggle('d-none');
+        });
     }
 
-    // חיבור כפתור "הוסף מיקום חדש"
-    if (addLocationBtn) {
-        addLocationBtn.addEventListener('click', onAddLocationClick)
+    if (addLocBtn && typeof addNewLocation === 'function') {
+        addLocBtn.addEventListener('click', addNewLocation);
+    }
+});
+
+// ---------------------------------------------------------
+// לוגיקה ראשית: שליחת אירוע (תהליך של 3 שלבים)
+// 1. העלאת תמונה -> 2. יצירת אירוע -> 3. הוספת דירוג ראשוני
+// ---------------------------------------------------------
+async function onAddEventSubmit(e) {
+    e.preventDefault(); // עצירת ברירת המחדל של הדפדפן
+    
+    const msgDiv = document.querySelector('#addEventMessage');
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    // וידוא מזהה משתמש (תמיכה באות גדולה/קטנה בהתאם לשרת)
+    const userId = user ? (user.userId || user.UserId) : null;
+
+    if (!userId) {
+        msgDiv.textContent = 'שגיאה: לא ניתן לזהות את המשתמש. נא להתחבר מחדש.';
+        msgDiv.className = 'text-danger small mb-3';
+        return;
     }
 
-    // טעינת מיקומים קיימים ל־dropdown
-    loadLocationsForSelect()
-})
+    // איסוף נתונים מהשדות בטופס
+    const locationId = document.querySelector('#locationSelect').value;
+    const title = document.querySelector('#eventTitle').value; 
+    const type = document.querySelector('#eventType').value;
+    const start = document.querySelector('#startDate').value;
+    const end = document.querySelector('#endDate').value;
+    const municipality = document.querySelector('#municipality').value;
+    const responsible = document.querySelector('#responsibleBody').value;
+    const status = document.querySelector('#eventStatus').value;
+    const descRaw = document.querySelector('#description').value;
+    
+    // איסוף נתוני דירוג
+    const noise = document.querySelector('#noiseScore').value;
+    const traffic = document.querySelector('#trafficScore').value;
+    const safety = document.querySelector('#safetyScore').value;
 
-/* -------------------------------------------------------
-   1, טעינת כל המיקומים מרשימת Locations (spGetAllLocations)
--------------------------------------------------------- */
-function loadLocationsForSelect() {
+    // אלמנט קובץ התמונה
+    const imageInput = document.querySelector('#eventImage');
 
-    const select = document.querySelector('#locationSelect')
-    const messageDiv = document.querySelector('#addEventMessage')
-
-    if (!select) {
-        return
+    // ---------------------------------------------------------
+    // בדיקות ולידציה בצד הלקוח
+    // ---------------------------------------------------------
+    if (!locationId || !type || !start || !municipality || !status || !noise || !traffic || !safety) {
+        msgDiv.textContent = 'נא למלא את כל שדות החובה ולבחור דירוגים';
+        msgDiv.className = 'text-danger small mb-3';
+        return;
     }
 
-    // מצב טעינה
-    select.innerHTML = `
-        <option value="">טוען מיקומים מהמערכת</option>
-    `
-    select.disabled = true
+    // חובה להעלות תמונה
+    if (!imageInput.files || imageInput.files.length === 0) {
+        msgDiv.textContent = 'חובה להעלות תמונה לאירוע';
+        msgDiv.className = 'text-danger small mb-3';
+        return;
+    }
 
-    fetch(API_BASE_URL + '/Locations/all', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
+    try {
+        // הצגת חיווי למשתמש שהתהליך התחיל
+        msgDiv.textContent = 'שומר נתונים...';
+        msgDiv.className = 'text-info small mb-3';
+
+        // --- שלב 1: העלאת תמונה לשרת ---
+        let finalPhotoUrl = null;
+        const formData = new FormData();
+        formData.append('file', imageInput.files[0]);
+
+        const uploadRes = await fetch(`${API_URL_EVENTS}/upload`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!uploadRes.ok) throw new Error('שגיאה בהעלאת התמונה');
+        const uploadData = await uploadRes.json();
+        finalPhotoUrl = uploadData.path; // השרת מחזיר את הנתיב לשמירה ב-DB
+
+        // --- שלב 2: יצירת רשומת האירוע ב-DB ---
+        const eventData = {
+            StartDateTime: start,
+            EndDateTime: end ? end : null,
+            EventsType: type,
+            PhotoUrl: finalPhotoUrl, 
+            Description: title ? `${title} - ${descRaw}` : descRaw, // שרשור כותרת לתיאור
+            Municipality: municipality,
+            ResponsibleBody: responsible,
+            EventsStatus: status,
+            LocationsId: parseInt(locationId)
+        };
+
+        const createRes = await fetch(`${API_URL_EVENTS}/create`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(eventData)
+        });
+
+        if (!createRes.ok) {
+            const errText = await createRes.text();
+            console.error('Event Creation Error:', errText);
+            throw new Error('שגיאה ביצירת האירוע בשרת');
         }
-    })
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('שגיאה בטעינת מיקומים')
-            }
-            return res.json()
-        })
-        .then(locations => {
 
-            select.innerHTML = `
-                <option value="" disabled selected>בחר מיקום מהרשימה</option>
-            `
+        const createData = await createRes.json();
+        const newEventId = createData.eventsId || createData.EventsId;
 
-            if (!locations || locations.length === 0) {
-                const opt = document.createElement('option')
-                opt.value = ''
-                opt.textContent = 'לא נמצאו מיקומים במערכת'
-                select.appendChild(opt)
-                select.disabled = true
-                return
-            }
+        // --- שלב 3: הוספת דירוג ראשוני לאירוע ---
+        const avgScore = Math.round((Number(noise) + Number(traffic) + Number(safety)) / 3);
+        
+        const ratingData = {
+            UserId: userId,
+            EventsId: newEventId,
+            OverallScore: avgScore,
+            NoiseScore: parseInt(noise),
+            TrafficScore: parseInt(traffic),
+            SafetyScore: parseInt(safety),
+            Comment: 'נוצר אוטומטית עם האירוע'
+        };
 
-            locations.forEach(loc => {
-                const option = document.createElement('option')
+        const ratingRes = await fetch(`${API_URL_RATINGS}/add`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(ratingData)
+        });
 
-                // עבודה גם עם camelCase וגם עם PascalCase ליתר ביטחון
-                const id = loc.locationsId ?? loc.LocationsId
-                const city = loc.city ?? loc.City
-                const street = loc.street ?? loc.Street
-                const houseNumber = loc.houseNumber ?? loc.HouseNumber
-                const houseType = loc.houseType ?? loc.HouseType
-                const floor = loc.floor ?? loc.Floor
+        if (!ratingRes.ok) {
+            const errText = await ratingRes.text();
+            console.error('Rating Creation Error:', errText);
+            throw new Error('האירוע נוצר אך הייתה שגיאה בשמירת הדירוג: ' + errText);
+        }
 
-                option.value = id
+        // --- סיום מוצלח ---
+        msgDiv.textContent = 'האירוע והדירוג נוספו בהצלחה! מעביר לדף הבית...';
+        msgDiv.className = 'text-success small mb-3';
+        
+        // המתנה קצרה ומעבר לדף הבית
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 0);
 
-                let label = city || ''
-                if (street) {
-                    label += `, ${street}`
-                    if (houseNumber) {
-                        label += ` ${houseNumber}`
-                    }
-                }
-                if (houseType) {
-                    label += ` (${houseType}`
-                    if (floor !== null && floor !== undefined && floor !== '') {
-                        label += `, קומה ${floor}`
-                    }
-                    label += `)`
-                }
-
-                option.textContent = label.trim()
-                select.appendChild(option)
-            })
-
-            select.disabled = false
-        })
-        .catch(() => {
-            select.innerHTML = `
-                <option value="">שגיאה בטעינת מיקומים</option>
-            `
-            select.disabled = true
-
-            if (messageDiv) {
-                messageDiv.className = 'text-danger small mb-3'
-                messageDiv.textContent = 'לא ניתן לטעון את רשימת המיקומים כרגע, אפשר לנסות שוב מאוחר יותר'
-            }
-        })
-}
-
-/* -------------------------------------------------------
-   2, הצגת / הסתרת טופס "מיקום חדש"
--------------------------------------------------------- */
-function toggleNewLocationSection() {
-    const section = document.querySelector('#newLocationSection')
-    if (!section) {
-        return
-    }
-
-    // הוספה או הסרה של d-none
-    if (section.classList.contains('d-none')) {
-        section.classList.remove('d-none')
-    } else {
-        section.classList.add('d-none')
+    } catch (error) {
+        console.error(error);
+        msgDiv.textContent = error.message;
+        msgDiv.className = 'text-danger small mb-3';
     }
 }
 
-/* -------------------------------------------------------
-   3, הוספת מיקום חדש ל־DB (spAddLocation, POST)
--------------------------------------------------------- */
-function onAddLocationClick() {
+// ---------------------------------------------------------
+// פונקציית עזר לעדכון ה-Navbar
+// בודקת אם יש משתמש ב-localStorage ומציגה את שמו וכפתור התנתקות
+// ---------------------------------------------------------
+function updateNavbarState() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const navList = document.querySelector('.navbar-nav');
+    if (!navList) return;
 
-    const city = document.querySelector('#newCity')?.value.trim() || ''
-    const street = document.querySelector('#newStreet')?.value.trim() || ''
-    const houseNumber = document.querySelector('#newHouseNumber')?.value.trim() || ''
-    const houseType = document.querySelector('#newBuildingType')?.value || ''
-    const floorValue = document.querySelector('#newFloor')?.value.trim() || ''
+    if (user) {
+        // הסתרת לינקים של אורח (התחברות/הרשמה)
+        const guestLinks = document.querySelectorAll('a[href="login.html"], a[href="register.html"]');
+        guestLinks.forEach(link => {
+            if (link.parentElement) link.parentElement.style.display = 'none';
+        });
 
-    const newLocationMessage = document.querySelector('#newLocationMessage')
-    const locationSelect = document.querySelector('#locationSelect')
+        // הוספת אלמנט "שלום משתמש" וכפתור התנתקות
+        if (!document.querySelector('#logoutBtn')) {
+            const li = document.createElement('li');
+            li.className = 'nav-item d-flex align-items-center';
+            // תמיכה באות גדולה/קטנה לשם המשתמש
+            const userName = user.FirstName || user.firstName || 'משתמש';
+            li.innerHTML = `
+                <span class="nav-link text-dark fw-bold">שלום, ${userName}</span>
+                <button id="logoutBtn" class="btn btn-outline-danger btn-sm ms-2">התנתק</button>
+            `;
+            navList.appendChild(li);
 
-    if (!newLocationMessage || !locationSelect) {
-        return
+            // אירוע לחיצה על התנתקות
+            document.querySelector('#logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            });
+        }
     }
-
-    newLocationMessage.textContent = ''
-    newLocationMessage.className = 'small mb-2'
-
-    // ולידציה לפי הטבלה, City, Street, HouseNumber, HouseType חייבים
-    if (!city || !street || !houseNumber || !houseType) {
-        newLocationMessage.className = 'text-danger small mb-2'
-        newLocationMessage.textContent = 'נא למלא עיר, רחוב, מספר בית וסוג מבנה כדי להוסיף מיקום'
-        return
-    }
-
-    const locationToSend = {
-        city: city,
-        street: street,
-        houseNumber: houseNumber,
-        houseType: houseType,
-        floor: floorValue === '' ? null : Number(floorValue)
-    }
-
-    fetch(API_BASE_URL + '/Locations/add', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(locationToSend)
-    })
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('שגיאה בהוספת המיקום')
-            }
-            return res.json()
-        })
-        .then(data => {
-            // מניחים שהשרת מחזיר את המזהה החדש, בצורה:
-            //  { locationsId: 123 } או { id: 123 } או אפילו מספר בלבד
-            const newId = data.locationsId ?? data.id ?? data
-
-            if (!newId) {
-                throw new Error('לא התקבל מזהה מיקום חדש מהשרת')
-            }
-
-            // בניית טקסט יפה ל־option
-            let label = city
-            if (street) {
-                label += `, ${street} ${houseNumber}`
-            }
-            if (houseType) {
-                label += ` (${houseType}`
-                if (floorValue !== '') {
-                    label += `, קומה ${floorValue}`
-                }
-                label += `)`
-            }
-
-            const option = document.createElement('option')
-            option.value = newId
-            option.textContent = label.trim()
-
-            // מוסיפים ל־select ובוחרים את המיקום החדש
-            locationSelect.appendChild(option)
-            locationSelect.value = String(newId)
-
-            newLocationMessage.className = 'text-success small mb-2'
-            newLocationMessage.textContent = 'המיקום נוסף בהצלחה ונבחר בטופס האירוע'
-
-        })
-        .catch(() => {
-            newLocationMessage.className = 'text-danger small mb-2'
-            newLocationMessage.textContent = 'לא ניתן להוסיף את המיקום כרגע, אפשר לנסות שוב מאוחר יותר'
-        })
-}
-
-/* -------------------------------------------------------
-   4, שליחת טופס אירוע חדש (spCreateEvent, POST)
--------------------------------------------------------- */
-function onAddEventSubmit(e) {
-    e.preventDefault()
-    addEvent()
-}
-
-function addEvent() {
-
-    const messageDiv = document.querySelector('#addEventMessage')
-    const form = document.querySelector('#addEventForm')
-
-    if (!messageDiv || !form) {
-        return
-    }
-
-    messageDiv.textContent = ''
-    messageDiv.className = 'small mb-3'
-
-    // קריאת שדות
-    const locationId = document.querySelector('#locationSelect')?.value || ''
-    const title = document.querySelector('#eventTitle')?.value.trim() || ''
-    const eventType = document.querySelector('#eventType')?.value || ''
-    const startDate = document.querySelector('#startDate')?.value || ''
-    const endDate = document.querySelector('#endDate')?.value || ''
-    const municipality = document.querySelector('#municipality')?.value.trim() || ''
-    const responsibleBody = document.querySelector('#responsibleBody')?.value.trim() || ''
-    const eventStatus = document.querySelector('#eventStatus')?.value || ''
-
-    const noiseScore = document.querySelector('#noiseScore')?.value || ''
-    const trafficScore = document.querySelector('#trafficScore')?.value || ''
-    const safetyScore = document.querySelector('#safetyScore')?.value || ''
-
-    const description = document.querySelector('#description')?.value.trim() || ''
-
-    // ולידציות בסיסיות לפי הטבלה, כל השדות NOT NULL
-    if (!locationId || !eventType || !startDate || !municipality || !responsibleBody || !eventStatus || !description) {
-        messageDiv.className = 'text-danger small mb-3'
-        messageDiv.textContent = 'נא למלא מיקום, סוג אירוע, תאריך התחלה, רשות מקומית, גורם אחראי, סטטוס ותיאור'
-        return
-    }
-
-    if (!noiseScore || !trafficScore || !safetyScore) {
-        messageDiv.className = 'text-danger small mb-3'
-        messageDiv.textContent = 'נא למלא את כל דירוגי האירוע, רעש, הפרעה לתנועה ובטיחות'
-        return
-    }
-
-    // מחברים כותרת לתיאור, כי בטבלת Events אין שדה Title
-    const finalDescription = title
-        ? `${title} - ${description}`
-        : description
-
-    const eventToSend = {
-        startDateTime: startDate,              // DATETIME2
-        endDateTime: endDate || null,         // יכול להיות null
-        eventsType: eventType,                // NVARCHAR(100)
-        photoUrl: null,                       // כרגע אין תמונה
-        description: finalDescription,        // NVARCHAR(1000)
-        municipality: municipality,           // NOT NULL
-        responsibleBody: responsibleBody,     // NOT NULL
-        eventsStatus: eventStatus,            // 'קרה' / 'קורה' / 'יקרה'
-        locationsId: Number(locationId)       // FK למיקום
-    }
-
-    fetch(API_BASE_URL + '/Events/create', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(eventToSend)
-    })
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('שגיאה ביצירת האירוע')
-            }
-            return res.json()
-        })
-        .then(data => {
-            // כאן האירוע כבר נשמר בדאטה בייס דרך spCreateEvent
-
-            messageDiv.className = 'text-success small mb-3'
-            messageDiv.textContent = 'האירוע נוצר בהצלחה במערכת'
-
-            // איפוס הטופס
-            form.reset()
-
-            // השארת רשימת מיקומים, החזרת טופס מיקום חדש למצב סגור
-            const newLocationSection = document.querySelector('#newLocationSection')
-            if (newLocationSection && !newLocationSection.classList.contains('d-none')) {
-                newLocationSection.classList.add('d-none')
-            }
-        })
-        .catch(() => {
-            messageDiv.className = 'text-danger small mb-3'
-            messageDiv.textContent = 'לא ניתן ליצור את האירוע כרגע, אפשר לנסות שוב מאוחר יותר'
-        })
 }

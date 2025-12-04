@@ -2,46 +2,55 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
-using Microsoft.Extensions.Configuration; // Needed for IConfiguration
-using System.IO; // Needed for Directory.GetCurrentDirectory
+using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace GroundShare.DAL
 {
+    // מחלקה זו משמשת כשירות בסיס לכל ה-DALים בפרויקט
+    // היא אחראית על יצירת החיבור למסד הנתונים והרצת הפרוצדורות
     public class DBServices
     {
+        // ---------------------------------------------------------------------------------
+        // יצירת אובייקט חיבור (SqlConnection) למסד הנתונים
+        // הפונקציה קוראת את מחרוזת החיבור מתוך קובץ ההגדרות appsettings.json
+        // ---------------------------------------------------------------------------------
         protected SqlConnection Connect()
         {
-            // read the connection string from the configuration file
             IConfigurationRoot configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json").Build();
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            // שליפת המחרוזת בשם DefaultConnection
             string cStr = configuration.GetConnectionString("DefaultConnection");
+
             SqlConnection con = new SqlConnection(cStr);
-            con.Open();
+            con.Open(); // פתיחת החיבור
             return con;
         }
 
+        // ---------------------------------------------------------------------------------
+        // יצירת אובייקט פקודה (SqlCommand) המקושר ל-Stored Procedure
+        // מקבל: שם הפרוצדורה, החיבור הפתוח, ומילון של פרמטרים (אם יש)
+        // ---------------------------------------------------------------------------------
         protected SqlCommand CreateCommandWithStoredProcedure(string spName, SqlConnection con, Dictionary<string, object> paramDic)
         {
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+            cmd.CommandText = spName;
+            cmd.CommandTimeout = 10; // זמן המתנה מקסימלי לתשובה (בשניות)
+            cmd.CommandType = System.Data.CommandType.StoredProcedure; // הגדרה שמדובר ב-SP
 
-            SqlCommand cmd = new SqlCommand(); 
-
-            cmd.Connection = con;         
-
-            cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
-
-            cmd.CommandTimeout = 10;           
-
-            cmd.CommandType = System.Data.CommandType.StoredProcedure; 
-
+            // אם נשלחו פרמטרים, נוסיף אותם לפקודה
             if (paramDic != null)
             {
                 foreach (KeyValuePair<string, object> param in paramDic)
                 {
-                    cmd.Parameters.AddWithValue(param.Key, param.Value);
+                    // שימוש ב-DBNull.Value אם הערך הוא null, כדי למנוע שגיאות SQL
+                    cmd.Parameters.AddWithValue(param.Key, param.Value ?? DBNull.Value);
                 }
             }
             return cmd;
         }
-
     }
 }

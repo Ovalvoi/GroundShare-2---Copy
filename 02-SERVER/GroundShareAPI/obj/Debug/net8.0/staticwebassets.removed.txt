@@ -1,19 +1,5 @@
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\ead82b77-2c76-433e-84ac-b65a69e131f8.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\f1d2cead-c77f-46d2-9ea1-963a57756e4a.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\4ea35ec6-8050-4587-bd1e-1c1833554c27.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\bfc19028-e165-4899-b983-fa2040aead99.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\bb89148d-988d-4153-8e8f-598e34060a51.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\2aa63790-6a12-4306-8d95-e01333ca1594.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\412cd45d-9930-4142-9b20-641500e5fb8d.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\9a0284f8-4be8-4e01-b762-9e541b031e5f.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\cfa5764d-7455-46c6-b9f0-43cf8b281392.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\c032aa1d-1515-491a-add9-7fa336d5de14.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\5c0b825f-e941-42fc-aa47-26970ea7650b.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\736b4116-3f8c-404c-b84e-342e8679bfcb.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\b32138a3-eb14-42fc-b1e8-10de39e2f62d.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\202bb6e1-e55a-4294-b95b-189a9a40a734.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\c8202cad-2a6e-41e2-a655-c4bb8121b6c2.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\a89ba51d-6dd1-4eb3-917a-b15540abcc71.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\09b19757-658a-4a6e-b38d-63aa488d55cf.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\5318af21-3868-4395-b9fc-cb7d314c6d58.jpg
-C:\Users\ninio\source\repos\GroundShare-2---Omer\02-SERVER\GroundShareAPI\wwwroot\images\c4a5dece-71fd-4c12-9b33-61b1b7f10925.jpg
+C:\Users\Yuval\source\repos\.NET SHAY\GroundShare-2 - Copy\02-SERVER\GroundShareAPI\wwwroot\images\591054ed-2c79-461d-aeb4-3bcafbefa5fa.jpg
+C:\Users\Yuval\source\repos\.NET SHAY\GroundShare-2 - Copy\02-SERVER\GroundShareAPI\wwwroot\images\4f676e8c-0887-401f-97c5-6d7dd4fb0383.jpg
+C:\Users\Yuval\source\repos\.NET SHAY\GroundShare-2 - Copy\02-SERVER\GroundShareAPI\wwwroot\images\e91b3d4b-f022-4bcb-80db-4821c10b4f0a.jpg
+C:\Users\Yuval\source\repos\.NET SHAY\GroundShare-2 - Copy\02-SERVER\GroundShareAPI\wwwroot\images\e1bafbe2-99f1-4445-a8a2-fe33ed877376.jpg
+C:\Users\Yuval\source\repos\.NET SHAY\GroundShare-2 - Copy\02-SERVER\GroundShareAPI\wwwroot\images\29e24ecd-4197-419a-ad05-fb6b1e795a3b.jpg

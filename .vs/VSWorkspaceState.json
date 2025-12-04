@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\02-SERVER",
+    "\\02-SERVER\\GroundShareAPI",
+    "\\02-SERVER\\GroundShareAPI\\BL"
   ],
-  "SelectedNode": "\\GroundShareAPI.sln",
+  "SelectedNode": "\\02-SERVER\\GroundShareAPI\\BL\\User.cs",
   "PreviewInSolutionExplorer": false
 }

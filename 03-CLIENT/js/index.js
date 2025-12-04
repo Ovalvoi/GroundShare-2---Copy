@@ -1,167 +1,155 @@
-const API_BASE_URL = 'https://localhost:7057/api';
+const API_URL_ALL_EVENTS = 'https://localhost:7057/api/Events/all';
 
-// טוען את כל האירועים כשדף הבית נטען
+// ---------------------------------------------------------
+// אתחול דף הבית (Home Page)
+// ---------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
-    loadAllEvents()
-})
-
-// שליפת כל האירועים מהשרת בשיטת then כמו בדוגמה של המרצה
-function loadAllEvents() {
-
-    const container = document.querySelector('#eventsContainer')
-
-    if (!container) {
-        return
+    
+    // 1. עדכון התפריט העליון (הצגת שם משתמש אם מחובר)
+    // הערה: פונקציה זו הוגדרה ב-events.js, אם הקובץ לא נטען כאן יש להעתיקה או לייבא אותה
+    // לצורך הדגמה, נניח שהיא זמינה או שנוסיף אותה גם כאן אם צריך.
+    if (typeof updateNavbarState === 'function') {
+        updateNavbarState();
+    } else {
+        // מימוש מקומי במידה והפונקציה לא קיימת
+        localUpdateNavbar();
     }
 
-    // מצב טעינה
-    container.innerHTML = `
-        <div class="text-center py-5">
-            <div class="spinner-border" role="status"></div>
-            <p class="mt-3 mb-0">טוען את רשימת האירועים</p>
-        </div>
-    `
+    // 2. טעינת רשימת האירועים מהשרת
+    loadAllEvents();
+});
 
-    fetch(API_BASE_URL + '/Events/all', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
+// ---------------------------------------------------------
+// שליפת כל האירועים מהשרת והצגתם במסך
+// ---------------------------------------------------------
+function loadAllEvents() {
+    const container = document.querySelector('#eventsContainer');
+    if (!container) return;
+
+    // הצגת אנימציית טעינה (Spinner) למשתמש
+    container.innerHTML = `
+        <div class="col-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted">טוען אירועים...</p>
+        </div>
+    `;
+
+    // ביצוע בקשת GET
+    fetch(API_URL_ALL_EVENTS)
         .then(res => {
-            if (!res.ok) {
-                throw new Error('שגיאה בטעינת האירועים מהשרת')
-            }
-            return res.json()
+            if (!res.ok) throw new Error('שגיאה בטעינת הנתונים');
+            return res.json();
         })
         .then(events => {
-            renderEventsList(events)
+            // שליחת הנתונים לפונקציית הרינדור
+            renderEvents(events);
         })
-        .catch(() => {
+        .catch(err => {
+            // הצגת הודעת שגיאה במקרה של כישלון
             container.innerHTML = `
-                <div class="alert alert-danger mt-4 mb-0" role="alert">
-                    לא ניתן לטעון את רשימת האירועים כרגע,
-                    אנא נסה שוב מאוחר יותר
+                <div class="col-12 alert alert-danger text-center">
+                    שגיאה בטעינת אירועים: ${err.message}
                 </div>
-            `
-        })
+            `;
+        });
 }
 
-// מציירת רשימה של כרטיסי אירועים
-function renderEventsList(events) {
+// ---------------------------------------------------------
+// פונקציה לבניית ה-HTML של כרטיסי האירועים (Render)
+// ---------------------------------------------------------
+function renderEvents(events) {
+    const container = document.querySelector('#eventsContainer');
+    container.innerHTML = ''; // ניקוי תוכן קודם
 
-    const container = document.querySelector('#eventsContainer')
-
-    if (!container) {
-        return
-    }
-
-    container.innerHTML = ''
-
+    // בדיקה אם אין אירועים כלל
     if (!events || events.length === 0) {
-        container.innerHTML = `
-            <div class="text-center py-5">
-                <p class="mb-0">לא נמצאו אירועים להצגה</p>
-            </div>
-        `
-        return
+        container.innerHTML = '<div class="col-12 text-center">לא נמצאו אירועים במערכת</div>';
+        return;
     }
 
-    events.forEach(ev => {
-        const card = createEventCard(ev)
-        container.appendChild(card)
-    })
+    // לולאה על כל אירוע ליצירת כרטיס
+    events.forEach(event => {
+        // טיפול בכתובת התמונה:
+        // אם הכתובת מתחילה ב-"images/", זה קובץ מקומי בשרת ויש להוסיף לו את הדומיין
+        let imageUrl = event.photoUrl || 'https://placehold.co/600x400?text=No+Image';
+        if (imageUrl.startsWith('images/')) {
+            imageUrl = `https://localhost:7057/${imageUrl}`;
+        }
+
+        // עיצוב הדירוג (ספרה אחת אחרי הנקודה)
+        const rating = event.avgRating ? event.avgRating.toFixed(1) : '0.0';
+        
+        // יצירת ה-HTML של הכרטיס (שימוש ב-Template Literals)
+        const cardHtml = `
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm event-card">
+                    <div class="position-relative">
+                        <img src="${imageUrl}" class="card-img-top event-img-top" alt="תמונת אירוע">
+                        <span class="status-badge status-${event.eventsStatus}">${event.eventsStatus}</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">${event.eventsType}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            <i class="fa-solid fa-map-pin me-1"></i>
+                            ${event.city}, ${event.street} ${event.houseNumber}
+                        </h6>
+                        <p class="card-text text-truncate" title="${event.description}">
+                            ${event.description}
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <small class="text-muted">
+                                <i class="fa-regular fa-calendar me-1"></i>
+                                ${new Date(event.startDateTime).toLocaleDateString('he-IL')}
+                            </small>
+                            <div class="text-warning fw-bold">
+                                <i class="fa-solid fa-star"></i> ${rating}
+                                <span class="text-muted small fw-normal">(${event.ratingCount})</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // הוספת הכרטיס לקונטיינר
+        container.innerHTML += cardHtml;
+    });
 }
 
-// יוצרת כרטיס DOM אחד מאובייקט אירוע בודד
-function createEventCard(event) {
+// ---------------------------------------------------------
+// פונקציה מקומית לעדכון ה-Navbar (במקרה ואין קובץ משותף)
+// ---------------------------------------------------------
+function localUpdateNavbar() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const navList = document.querySelector('.navbar-nav');
+    if (!navList) return;
 
-    const startDate = event.startDateTime
-        ? new Date(event.startDateTime).toLocaleString('he-IL')
-        : 'לא ידוע'
+    if (user) {
+        // הסתרת כפתורי אורח
+        const guestLinks = document.querySelectorAll('a[href="login.html"], a[href="register.html"]');
+        guestLinks.forEach(link => {
+            if(link.parentElement) link.parentElement.style.display = 'none';
+        });
 
-    const endDate = event.endDateTime
-        ? new Date(event.endDateTime).toLocaleString('he-IL')
-        : 'לא ידוע'
+        // הוספת כפתור התנתקות
+        if (!document.getElementById('logoutBtn')) {
+            const li = document.createElement('li');
+            li.className = 'nav-item d-flex align-items-center ms-lg-3';
+            const userName = user.FirstName || user.firstName || 'משתמש';
+            li.innerHTML = `
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fw-bold text-primary">שלום, ${userName}</span>
+                    <button id="logoutBtn" class="btn btn-sm btn-outline-danger">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            `;
+            navList.appendChild(li);
 
-    const locationText = [
-        event.city,
-        event.street && event.houseNumber
-            ? `${event.street} ${event.houseNumber}`
-            : event.street || ''
-    ]
-        .filter(x => x && x.trim() !== '')
-        .join(', ')
-
-    const avgRating = typeof event.avgRating === 'number'
-        ? event.avgRating.toFixed(1)
-        : '0.0'
-
-    const ratingCount = event.ratingCount || 0
-
-    const photoUrl =
-        event.photoUrl && event.photoUrl.trim() !== ''
-            ? event.photoUrl
-            : 'https://placehold.co/600x400/cccccc/000000?text=No+Image'
-
-    const wrapper = document.createElement('div')
-    wrapper.className = 'col-12 col-md-6 col-lg-4'
-
-    wrapper.innerHTML = `
-        <div class="card shadow-sm h-100">
-            <img src="${photoUrl}" class="card-img-top" alt="תמונת אירוע">
-
-            <div class="card-body d-flex flex-column">
-                <h5 class="card-title mb-2">
-                    ${event.eventsType || 'אירוע'}
-                </h5>
-
-                <p class="card-text mb-2 text-muted">
-                    ${event.description || 'ללא תיאור'}
-                </p>
-
-                <p class="card-text mb-1">
-                    <strong>סטטוס,</strong>
-                    ${event.eventsStatus || 'לא ידוע'}
-                </p>
-
-                <p class="card-text mb-1">
-                    <strong>מועצה / עירייה,</strong>
-                    ${event.municipality || 'לא ידוע'}
-                </p>
-
-                <p class="card-text mb-1">
-                    <strong>גורם אחראי,</strong>
-                    ${event.responsibleBody || 'לא ידוע'}
-                </p>
-
-                <p class="card-text mb-1">
-                    <strong>מיקום,</strong>
-                    ${locationText || 'לא ידוע'}
-                </p>
-
-                <p class="card-text mb-1">
-                    <strong>התחלה,</strong>
-                    ${startDate}
-                </p>
-
-                <p class="card-text mb-2">
-                    <strong>סיום משוער,</strong>
-                    ${endDate}
-                </p>
-
-                <p class="card-text mb-3">
-                    <strong>דירוג ממוצע,</strong>
-                    ${avgRating}
-                    <span class="text-warning ms-1">
-                        <i class="fa-solid fa-star"></i>
-                    </span>
-                    <span class="text-muted small">
-                        (${ratingCount} דירוגים)
-                    </span>
-                </p>
-            </div>
-        </div>
-    `
-    return wrapper
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            });
+        }
+    }
 }

@@ -1,19 +1,28 @@
-var builder = WebApplication.CreateBuilder(args);
+﻿var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// הוספת שירותים לקונטיינר
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 1. ADD CORS (So your HTML client can fetch data)
-builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
+// ---------------------------------------------------------
+// הגדרת CORS: מאפשר לצד הלקוח (דפדפן) לשלוח בקשות לשרת
+// ללא חסימות אבטחה כשהם רצים על פורטים שונים
+// ---------------------------------------------------------
+builder.Services.AddCors(options =>
 {
-    builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
-}));
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// הגדרת ה-HTTP pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -22,10 +31,16 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles(); // Required for your images
+// ---------------------------------------------------------
+// אפשור קבצים סטטיים: מאפשר גישה לקבצים בתיקיית wwwroot
+// זה קריטי כדי שנוכל להציג את התמונות שהועלו
+// ---------------------------------------------------------
+app.UseStaticFiles();
 
-// IMPORTANT: CORS must be here
-app.UseCors("corsapp");
+// ---------------------------------------------------------
+// הפעלת ה-CORS שהוגדר למעלה
+// ---------------------------------------------------------
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GroundShareAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0d76999729f1312f04420e46588935c2de5e905c")]
 [assembly: System.Reflection.AssemblyProductAttribute("GroundShareAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GroundShareAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

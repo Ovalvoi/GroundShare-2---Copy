@@ -71,48 +71,6 @@
         }
       }
     },
-    "/api/Events/update/{id}": {
-      "put": {
-        "tags": [
-          "Events"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Event"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Event"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Event"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/Events/delete/{id}": {
       "delete": {
         "tags": [
@@ -129,6 +87,38 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Events/upload": {
+      "post": {
+        "tags": [
+          "Events"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -233,7 +223,7 @@
         }
       }
     },
-    "/api/Users/register": {
+    "/api/Users/login": {
       "post": {
         "tags": [
           "Users"
@@ -264,7 +254,7 @@
         }
       }
     },
-    "/api/Users/login": {
+    "/api/Users/register": {
       "post": {
         "tags": [
           "Users"

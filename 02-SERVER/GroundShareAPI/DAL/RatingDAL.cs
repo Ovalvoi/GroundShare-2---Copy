@@ -2,101 +2,80 @@
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.Data;
 
 namespace GroundShare.DAL
 {
+    // גישה לנתונים עבור דירוגים
     public class RatingsDAL : DBServices
     {
-        private SqlDataReader reader;
-        private SqlConnection connection;
-        private SqlCommand command;
-
-        // הוספת דירוג חדש - SP: spAddRating
-        // מחזיר RatingId חדש
+        // ---------------------------------------------------------------------------------
+        // הוספת דירוג חדש למסד הנתונים
+        // ---------------------------------------------------------------------------------
         public int AddRating(Rating rating)
         {
             int newId = -1;
-
+            SqlConnection connection = null;
             try
             {
                 connection = Connect();
-
-                Dictionary<string, object> paramDic = new Dictionary<string, object>();
-                paramDic.Add("@UserId", rating.UserId);
-                paramDic.Add("@EventsId", rating.EventsId);
-                paramDic.Add("@OverallScore", rating.OverallScore);
-                paramDic.Add("@NoiseScore", rating.NoiseScore);
-                paramDic.Add("@TrafficScore", rating.TrafficScore);
-                paramDic.Add("@SafetyScore", rating.SafetyScore);
-                paramDic.Add("@Comment", (object?)rating.Comment ?? DBNull.Value);
-
-                command = CreateCommandWithStoredProcedure("spAddRating", connection, paramDic);
-
-                object scalar = command.ExecuteScalar();
-
-                if (scalar != null && scalar != DBNull.Value)
+                var p = new Dictionary<string, object>
                 {
-                    if (scalar is decimal dec)
-                        newId = (int)dec;
-                    else
-                        newId = Convert.ToInt32(scalar);
-                }
+                    { "@UserId", rating.UserId },
+                    { "@EventsId", rating.EventsId },
+                    { "@OverallScore", rating.OverallScore },
+                    { "@NoiseScore", rating.NoiseScore },
+                    { "@TrafficScore", rating.TrafficScore },
+                    { "@SafetyScore", rating.SafetyScore },
+                    { "@Comment", rating.Comment }
+                };
+                SqlCommand command = CreateCommandWithStoredProcedure("spAddRating", connection, p);
+                object scalar = command.ExecuteScalar();
+                if (scalar != null) newId = Convert.ToInt32(scalar);
             }
             finally
             {
-                if (connection != null && connection.State != ConnectionState.Closed)
-                    connection.Close();
+                if (connection != null) connection.Close();
             }
-
             return newId;
         }
 
-        // שליפת כל הדירוגים של אירוע - SP: spGetRatingsByEvent
+        // ---------------------------------------------------------------------------------
+        // שליפת רשימת דירוגים לפי מזהה אירוע
+        // ---------------------------------------------------------------------------------
         public List<Rating> GetRatingsByEvent(int eventId)
         {
-            List<Rating> ratings = new List<Rating>();
-
+            List<Rating> list = new List<Rating>();
+            SqlConnection connection = null;
+            SqlDataReader reader = null;
             try
             {
                 connection = Connect();
-
-                Dictionary<string, object> paramDic = new Dictionary<string, object>();
-                paramDic.Add("@EventsId", eventId);
-
-                command = CreateCommandWithStoredProcedure("spGetRatingsByEvent", connection, paramDic);
-
+                var p = new Dictionary<string, object> { { "@EventsId", eventId } };
+                SqlCommand command = CreateCommandWithStoredProcedure("spGetRatingsByEvent", connection, p);
                 reader = command.ExecuteReader();
 
                 while (reader.Read())
                 {
                     Rating r = new Rating();
-
                     r.RatingId = Convert.ToInt32(reader["RatingId"]);
                     r.UserId = Convert.ToInt32(reader["UserId"]);
                     r.EventsId = Convert.ToInt32(reader["EventsId"]);
+                    // שימוש ב-Convert.ToByte עבור שדות מסוג TinyInt ב-SQL
                     r.OverallScore = Convert.ToByte(reader["OverallScore"]);
                     r.NoiseScore = Convert.ToByte(reader["NoiseScore"]);
                     r.TrafficScore = Convert.ToByte(reader["TrafficScore"]);
                     r.SafetyScore = Convert.ToByte(reader["SafetyScore"]);
                     r.Comment = reader["Comment"].ToString();
                     r.CreatedAt = Convert.ToDateTime(reader["CreatedAt"]);
-
-                    ratings.Add(r);
+                    list.Add(r);
                 }
             }
             finally
             {
-                if (reader != null && !reader.IsClosed)
-                    reader.Close();
-
-                if (connection != null && connection.State != ConnectionState.Closed)
-                    connection.Close();
+                if (reader != null) reader.Close();
+                if (connection != null) connection.Close();
             }
-
-            return ratings;
+            return list;
         }
     }
-
-
 }
