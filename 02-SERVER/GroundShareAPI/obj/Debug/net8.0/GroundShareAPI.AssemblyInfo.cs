@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GroundShareAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ad23b79380c3e7f81a311ab8f3f2eb437c62c4ac")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c72ba0b211cf2b85cc1c9a1d2f69c3d95ab05066")]
 [assembly: System.Reflection.AssemblyProductAttribute("GroundShareAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GroundShareAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
