@@ -1,7 +1,5 @@
 ﻿using GroundShare.BL;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
 
 namespace GroundShare.DAL
 {
@@ -15,6 +13,7 @@ namespace GroundShare.DAL
         {
             int newId = -1;
             SqlConnection connection = null;
+            SqlDataReader reader = null;
             try
             {
                 connection = Connect();
@@ -27,11 +26,22 @@ namespace GroundShare.DAL
                     { "@Floor", location.Floor }
                 };
                 SqlCommand command = CreateCommandWithStoredProcedure("spAddLocation", connection, p);
-                object scalar = command.ExecuteScalar();
-                if (scalar != null) newId = Convert.ToInt32(scalar);
+
+                // Changed from ExecuteScalar to ExecuteReader
+                reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    // שימוש ב-Convert.ToInt32 מבצע המרה אוטומטית, גם אם ה-SQL מחזיר Decimal (מה שקורה עם SCOPE_IDENTITY)
+                    // for example, if the database returns a decimal (LIKE:5.0) type for the new ID we can still convert it to int
+                    if (reader[0] != DBNull.Value)
+                    {
+                        newId = Convert.ToInt32(reader[0]);
+                    }
+                }
             }
             finally
             {
+                if (reader != null) reader.Close();
                 if (connection != null) connection.Close();
             }
             return newId;

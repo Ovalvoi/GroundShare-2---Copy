@@ -1,5 +1,0 @@
-C:\Users\Yuval\source\repos\.NET SHAY\GroundShare-2 - Copy\02-SERVER\GroundShareAPI\wwwroot\images\591054ed-2c79-461d-aeb4-3bcafbefa5fa.jpg
-C:\Users\Yuval\source\repos\.NET SHAY\GroundShare-2 - Copy\02-SERVER\GroundShareAPI\wwwroot\images\4f676e8c-0887-401f-97c5-6d7dd4fb0383.jpg
-C:\Users\Yuval\source\repos\.NET SHAY\GroundShare-2 - Copy\02-SERVER\GroundShareAPI\wwwroot\images\e91b3d4b-f022-4bcb-80db-4821c10b4f0a.jpg
-C:\Users\Yuval\source\repos\.NET SHAY\GroundShare-2 - Copy\02-SERVER\GroundShareAPI\wwwroot\images\e1bafbe2-99f1-4445-a8a2-fe33ed877376.jpg
-C:\Users\Yuval\source\repos\.NET SHAY\GroundShare-2 - Copy\02-SERVER\GroundShareAPI\wwwroot\images\29e24ecd-4197-419a-ad05-fb6b1e795a3b.jpg

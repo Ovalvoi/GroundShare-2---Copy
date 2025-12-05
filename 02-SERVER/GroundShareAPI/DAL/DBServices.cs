@@ -1,9 +1,4 @@
-﻿using System;
-using System.Data;
-using Microsoft.Data.SqlClient;
-using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
-using System.IO;
+﻿using Microsoft.Data.SqlClient;
 
 namespace GroundShare.DAL
 {
@@ -44,6 +39,10 @@ namespace GroundShare.DAL
             // אם נשלחו פרמטרים, נוסיף אותם לפקודה
             if (paramDic != null)
             {
+                //key value pair means that each parameter has a name (key) and a value (value) for example:
+                //param is a KeyValuePair.
+                //param.Key = "@City"
+                //param.Value = "Tel Aviv"
                 foreach (KeyValuePair<string, object> param in paramDic)
                 {
                     // שימוש ב-DBNull.Value אם הערך הוא null, כדי למנוע שגיאות SQL

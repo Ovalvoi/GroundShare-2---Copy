@@ -68,40 +68,70 @@ async function onAddEventSubmit(e) {
     }
 
     // איסוף נתונים מהשדות בטופס
-    const locationId = document.querySelector('#locationSelect').value;
-    const title = document.querySelector('#eventTitle').value; 
-    const type = document.querySelector('#eventType').value;
-    const start = document.querySelector('#startDate').value;
-    const end = document.querySelector('#endDate').value;
-    const municipality = document.querySelector('#municipality').value;
-    const responsible = document.querySelector('#responsibleBody').value;
-    const status = document.querySelector('#eventStatus').value;
-    const descRaw = document.querySelector('#description').value;
+    const locationEl = document.querySelector('#locationSelect');
+    const titleEl = document.querySelector('#eventTitle');
+    const typeEl = document.querySelector('#eventType');
+    const startEl = document.querySelector('#startDate');
+    const endEl = document.querySelector('#endDate');
+    const municipalityEl = document.querySelector('#municipality');
+    const responsibleEl = document.querySelector('#responsibleBody');
+    const statusEl = document.querySelector('#eventStatus');
+    const descEl = document.querySelector('#description');
     
     // איסוף נתוני דירוג
-    const noise = document.querySelector('#noiseScore').value;
-    const traffic = document.querySelector('#trafficScore').value;
-    const safety = document.querySelector('#safetyScore').value;
+    const noiseEl = document.querySelector('#noiseScore');
+    const trafficEl = document.querySelector('#trafficScore');
+    const safetyEl = document.querySelector('#safetyScore');
 
     // אלמנט קובץ התמונה
     const imageInput = document.querySelector('#eventImage');
 
     // ---------------------------------------------------------
-    // בדיקות ולידציה בצד הלקוח
+    // בדיקות ולידציה + סימון באדום (Red Highlight)
     // ---------------------------------------------------------
-    if (!locationId || !type || !start || !municipality || !status || !noise || !traffic || !safety) {
-        msgDiv.textContent = 'נא למלא את כל שדות החובה ולבחור דירוגים';
-        msgDiv.className = 'text-danger small mb-3';
-        return;
+    
+    // ניקוי סימונים קודמים (הסרת המחלקה is-invalid מכל השדות)
+    const allInputs = document.querySelectorAll('.form-control, .form-select');
+    allInputs.forEach(el => el.classList.remove('is-invalid'));
+
+    let hasError = false;
+
+    // פונקציית עזר לבדיקה וסימון שדה
+    function validateField(element) {
+        if (!element || !element.value || element.value === "") {
+            if (element) element.classList.add('is-invalid'); // הוספת Class של Bootstrap למסגרת אדומה
+            hasError = true;
+        }
     }
 
-    // חובה להעלות תמונה
+    // בדיקת שדות החובה (בהתאם ללוגיקה המקורית)
+    validateField(locationEl);
+    validateField(typeEl);
+    validateField(startEl);
+    validateField(municipalityEl);
+    validateField(statusEl);
+    
+    // בדיקת דירוגים
+    validateField(noiseEl);
+    validateField(trafficEl);
+    validateField(safetyEl);
+
+    // בדיקת תמונה בנפרד (כי זה file input)
     if (!imageInput.files || imageInput.files.length === 0) {
-        msgDiv.textContent = 'חובה להעלות תמונה לאירוע';
-        msgDiv.className = 'text-danger small mb-3';
+        imageInput.classList.add('is-invalid');
+        hasError = true;
+    }
+
+    // אם נמצאה שגיאה, מציגים הודעה ועוצרים
+    if (hasError) {
+        msgDiv.textContent = 'נא למלא את כל שדות החובה המסומנים באדום';
+        msgDiv.className = 'text-danger small mb-3 fw-bold';
         return;
     }
 
+    // ---------------------------------------------------------
+    // שליחת הנתונים לשרת (רק אם הכל תקין)
+    // ---------------------------------------------------------
     try {
         // הצגת חיווי למשתמש שהתהליך התחיל
         msgDiv.textContent = 'שומר נתונים...';
@@ -123,15 +153,15 @@ async function onAddEventSubmit(e) {
 
         // --- שלב 2: יצירת רשומת האירוע ב-DB ---
         const eventData = {
-            StartDateTime: start,
-            EndDateTime: end ? end : null,
-            EventsType: type,
+            StartDateTime: startEl.value,
+            EndDateTime: endEl.value ? endEl.value : null,
+            EventsType: typeEl.value,
             PhotoUrl: finalPhotoUrl, 
-            Description: title ? `${title} - ${descRaw}` : descRaw, // שרשור כותרת לתיאור
-            Municipality: municipality,
-            ResponsibleBody: responsible,
-            EventsStatus: status,
-            LocationsId: parseInt(locationId)
+            Description: titleEl.value ? `${titleEl.value} - ${descEl.value}` : descEl.value,
+            Municipality: municipalityEl.value,
+            ResponsibleBody: responsibleEl.value,
+            EventsStatus: statusEl.value,
+            LocationsId: parseInt(locationEl.value)
         };
 
         const createRes = await fetch(`${API_URL_EVENTS}/create`, {
@@ -150,16 +180,16 @@ async function onAddEventSubmit(e) {
         const newEventId = createData.eventsId || createData.EventsId;
 
         // --- שלב 3: הוספת דירוג ראשוני לאירוע ---
-        const avgScore = Math.round((Number(noise) + Number(traffic) + Number(safety)) / 3);
+        const avgScore = Math.round((Number(noiseEl.value) + Number(trafficEl.value) + Number(safetyEl.value)) / 3);
         
         const ratingData = {
             UserId: userId,
             EventsId: newEventId,
             OverallScore: avgScore,
-            NoiseScore: parseInt(noise),
-            TrafficScore: parseInt(traffic),
-            SafetyScore: parseInt(safety),
-            Comment: 'נוצר אוטומטית עם האירוע'
+            NoiseScore: parseInt(noiseEl.value),
+            TrafficScore: parseInt(trafficEl.value),
+            SafetyScore: parseInt(safetyEl.value),
+            Comment: 'אין תיאור' // תיאור ברירת מחדל
         };
 
         const ratingRes = await fetch(`${API_URL_RATINGS}/add`, {

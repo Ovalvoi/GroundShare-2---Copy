@@ -1,7 +1,5 @@
 ﻿using GroundShare.BL;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
 using System.Data;
 
 namespace GroundShare.DAL
@@ -74,19 +72,22 @@ namespace GroundShare.DAL
 
                 command = CreateCommandWithStoredProcedure("spRegisterUser", connection, paramDic);
 
-                // ה-SP אמור להחזיר את ה-ID החדש או -1 אם קיים
-                object scalar = command.ExecuteScalar();
+                // Changed from ExecuteScalar to ExecuteReader
+                reader = command.ExecuteReader();
 
-                if (scalar != null && scalar != DBNull.Value)
+                if (reader.Read())
                 {
-                    if (scalar is decimal dec)
-                        newId = (int)dec;
-                    else
-                        newId = Convert.ToInt32(scalar);
+                    // שימוש ב-Convert.ToInt32 מבצע המרה אוטומטית, גם אם ה-SQL מחזיר Decimal (מה שקורה עם SCOPE_IDENTITY)
+                    // for example, if the database returns a decimal (LIKE:5.0) type for the new ID we can still convert it to int
+                    if (reader[0] != DBNull.Value)
+                    {
+                        newId = Convert.ToInt32(reader[0]);
+                    }
                 }
             }
             finally
             {
+                if (reader != null && !reader.IsClosed) reader.Close();
                 if (connection != null && connection.State != ConnectionState.Closed) connection.Close();
             }
 
