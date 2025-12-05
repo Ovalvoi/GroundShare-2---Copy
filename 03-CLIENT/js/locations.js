@@ -1,5 +1,5 @@
-// הגדרת כתובת ה-API של המיקומים
-const LOCATIONS_API_URL = 'https://localhost:7057/api/Locations';
+// שימוש ב-var כדי לאפשר טעינה חוזרת במסכים המשלבים מספר קבצים
+var API_BASE_URL = 'https://localhost:7057/api';
 
 // ---------------------------------------------------------
 // פונקציה לשליפת כל המיקומים מהשרת
@@ -12,7 +12,7 @@ function loadLocationsForSelect() {
     if (!select) return;
 
     // ביצוע קריאת GET לשרת
-    fetch(`${LOCATIONS_API_URL}/all`, {
+    fetch(`${API_BASE_URL}/Locations/all`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -65,7 +65,7 @@ function addNewLocation() {
     };
 
     // שליחת בקשת POST לשרת
-    fetch(`${LOCATIONS_API_URL}/add`, {
+    fetch(`${API_BASE_URL}/Locations/add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(locationData)

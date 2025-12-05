@@ -1,8 +1,5 @@
-// הגדרת קבועים לכתובות ה-API
-const API_PORT = 7057;
-const API_BASE_URL = `https://localhost:${API_PORT}/api`;
-const API_URL_EVENTS = `${API_BASE_URL}/Events`;
-const API_URL_RATINGS = `${API_BASE_URL}/Ratings`;
+// שימוש ב-var כדי לאפשר טעינה חוזרת במסכים המשלבים מספר קבצים
+var API_BASE_URL = 'https://localhost:7057/api';
 
 // ---------------------------------------------------------
 // פונקציית אתחול - רצה כשהדף (DOM) נטען במלואו
@@ -142,7 +139,7 @@ async function onAddEventSubmit(e) {
         const formData = new FormData();
         formData.append('file', imageInput.files[0]);
 
-        const uploadRes = await fetch(`${API_URL_EVENTS}/upload`, {
+        const uploadRes = await fetch(`${API_BASE_URL}/Events/upload`, {
             method: 'POST',
             body: formData
         });
@@ -164,7 +161,7 @@ async function onAddEventSubmit(e) {
             LocationsId: parseInt(locationEl.value)
         };
 
-        const createRes = await fetch(`${API_URL_EVENTS}/create`, {
+        const createRes = await fetch(`${API_BASE_URL}/Events/create`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(eventData)
@@ -192,7 +189,7 @@ async function onAddEventSubmit(e) {
             Comment: 'אין תיאור' // תיאור ברירת מחדל
         };
 
-        const ratingRes = await fetch(`${API_URL_RATINGS}/add`, {
+        const ratingRes = await fetch(`${API_BASE_URL}/Ratings/add`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(ratingData)

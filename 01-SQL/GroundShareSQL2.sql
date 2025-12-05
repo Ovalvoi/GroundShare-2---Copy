@@ -227,22 +227,6 @@ BEGIN
 END
 GO
 
--- EVENTS: Update
-CREATE PROCEDURE spUpdateEvent
-    @EventsId INT,
-    @EventsType NVARCHAR(100),
-    @Description NVARCHAR(1000),
-    @EventsStatus NVARCHAR(20)
-AS
-BEGIN
-    UPDATE [Events]
-    SET EventsType = @EventsType,
-        [Description] = @Description,
-        EventsStatus = @EventsStatus
-    WHERE EventsId = @EventsId;
-END
-GO
-
 -- EVENTS: Delete
 CREATE PROCEDURE spDeleteEvent
     @EventsId INT

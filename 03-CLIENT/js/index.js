@@ -1,32 +1,32 @@
+// =========================================================
+// הגדרת קבועים (Constants) לכתובות השרת
+// =========================================================
 const API_URL_ALL_EVENTS = 'https://localhost:7057/api/Events/all';
+const API_URL_DELETE = 'https://localhost:7057/api/Events/delete';
 
-// ---------------------------------------------------------
-// אתחול דף הבית (Home Page)
-// ---------------------------------------------------------
+// =========================================================
+// אירוע טעינת הדף (DOMContentLoaded)
+// הפונקציה הראשית שרצה אוטומטית כשהדף עולה
+// =========================================================
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // 1. עדכון התפריט העליון (הצגת שם משתמש אם מחובר)
-    // הערה: פונקציה זו הוגדרה ב-events.js, אם הקובץ לא נטען כאן יש להעתיקה או לייבא אותה
-    // לצורך הדגמה, נניח שהיא זמינה או שנוסיף אותה גם כאן אם צריך.
+    // בדיקה אם קיימת פונקציה חיצונית לעדכון ה-Navbar, ואם לא - משתמשים במקומית
     if (typeof updateNavbarState === 'function') {
         updateNavbarState();
     } else {
-        // מימוש מקומי במידה והפונקציה לא קיימת
         localUpdateNavbar();
     }
-
-    // 2. טעינת רשימת האירועים מהשרת
+    // קריאה לפונקציה שטוענת את רשימת האירועים מהשרת
     loadAllEvents();
 });
 
-// ---------------------------------------------------------
-// שליפת כל האירועים מהשרת והצגתם במסך
-// ---------------------------------------------------------
+// =========================================================
+// פונקציה לטעינת כל האירועים מהשרת (GET Request)
+// =========================================================
 function loadAllEvents() {
     const container = document.querySelector('#eventsContainer');
     if (!container) return;
 
-    // הצגת אנימציית טעינה (Spinner) למשתמש
+    // שלב 1: הצגת ספינר (Loading) למשתמש עד שהמידע יגיע
     container.innerHTML = `
         <div class="col-12 text-center py-5">
             <div class="spinner-border text-primary" role="status"></div>
@@ -34,18 +34,18 @@ function loadAllEvents() {
         </div>
     `;
 
-    // ביצוע בקשת GET
+    // שלב 2: שליחת בקשה לשרת לקבלת רשימת האירועים
     fetch(API_URL_ALL_EVENTS)
         .then(res => {
             if (!res.ok) throw new Error('שגיאה בטעינת הנתונים');
             return res.json();
         })
         .then(events => {
-            // שליחת הנתונים לפונקציית הרינדור
+            // שלב 3: שליחת המידע שהתקבל לפונקציה שמציירת אותו על המסך
             renderEvents(events);
         })
         .catch(err => {
-            // הצגת הודעת שגיאה במקרה של כישלון
+            // במקרה של שגיאה: הצגת הודעה אדומה למשתמש
             container.innerHTML = `
                 <div class="col-12 alert alert-danger text-center">
                     שגיאה בטעינת אירועים: ${err.message}
@@ -54,32 +54,37 @@ function loadAllEvents() {
         });
 }
 
-// ---------------------------------------------------------
-// פונקציה לבניית ה-HTML של כרטיסי האירועים (Render)
-// ---------------------------------------------------------
+// =========================================================
+// פונקציה להצגת האירועים על המסך (Render)
+// מקבלת מערך של אירועים ומייצרת HTML עבור כל אחד
+// =========================================================
 function renderEvents(events) {
     const container = document.querySelector('#eventsContainer');
-    container.innerHTML = ''; // ניקוי תוכן קודם
+    // ניקוי הקונטיינר מתוכן קודם (כמו הספינר)
+    container.innerHTML = '';
 
-    // בדיקה אם אין אירועים כלל
+    // בדיקה אם המערך ריק (אין אירועים)
     if (!events || events.length === 0) {
         container.innerHTML = '<div class="col-12 text-center">לא נמצאו אירועים במערכת</div>';
         return;
     }
 
-    // לולאה על כל אירוע ליצירת כרטיס
+    // לולאה שעוברת על כל אירוע ובונה לו כרטיס
     events.forEach(event => {
-        // טיפול בכתובת התמונה:
-        // אם הכתובת מתחילה ב-"images/", זה קובץ מקומי בשרת ויש להוסיף לו את הדומיין
+        // טיפול בתמונה: אם הנתיב הוא יחסי (images/...), מוסיפים לו את כתובת השרת
         let imageUrl = event.photoUrl || 'https://placehold.co/600x400?text=No+Image';
         if (imageUrl.startsWith('images/')) {
             imageUrl = `https://localhost:7057/${imageUrl}`;
         }
 
-        // עיצוב הדירוג (ספרה אחת אחרי הנקודה)
+        // עיצוב הדירוג (נקודה עשרונית אחת)
         const rating = event.avgRating ? event.avgRating.toFixed(1) : '0.0';
-        
-        // יצירת ה-HTML של הכרטיס (שימוש ב-Template Literals)
+
+        // המרת תאריכים לפורמט קריא (יום/חודש/שנה)
+        const startDate = new Date(event.startDateTime).toLocaleDateString('he-IL');
+        const endDate = event.endDateTime ? new Date(event.endDateTime).toLocaleDateString('he-IL') : 'לא ידוע';
+
+        // בניית ה-HTML של הכרטיס (Card)
         const cardHtml = `
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100 shadow-sm event-card">
@@ -87,21 +92,31 @@ function renderEvents(events) {
                         <img src="${imageUrl}" class="card-img-top event-img-top" alt="תמונת אירוע">
                         <span class="status-badge status-${event.eventsStatus}">${event.eventsStatus}</span>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column">
                         <h5 class="card-title fw-bold">${event.eventsType}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">
                             <i class="fa-solid fa-map-pin me-1"></i>
                             ${event.city}, ${event.street} ${event.houseNumber}
                         </h6>
-                        <p class="card-text text-truncate" title="${event.description}">
+                        
+                        <p class="card-text flex-grow-1">
                             ${event.description}
                         </p>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <small class="text-muted">
-                                <i class="fa-regular fa-calendar me-1"></i>
-                                ${new Date(event.startDateTime).toLocaleDateString('he-IL')}
-                            </small>
-                            <div class="text-warning fw-bold">
+                        
+                        <div class="text-muted small mb-3">
+                            <div><i class="fa-regular fa-calendar me-1"></i> התחלה: ${startDate}</div>
+                            <div><i class="fa-regular fa-calendar-check me-1"></i> סיום: ${endDate}</div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-2 pt-2 border-top">
+                             <button onclick="deleteEvent('${event.eventsId}')" 
+                                class="btn btn-sm btn-outline-danger flex-fill">
+                                <i class="fa-solid fa-trash"></i> מחיקה
+                             </button>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                             <div class="text-warning fw-bold">
                                 <i class="fa-solid fa-star"></i> ${rating}
                                 <span class="text-muted small fw-normal">(${event.ratingCount})</span>
                             </div>
@@ -110,28 +125,54 @@ function renderEvents(events) {
                 </div>
             </div>
         `;
-        
-        // הוספת הכרטיס לקונטיינר
+
+        // הוספת הכרטיס החדש לרשימה בדף
         container.innerHTML += cardHtml;
     });
 }
 
-// ---------------------------------------------------------
-// פונקציה מקומית לעדכון ה-Navbar (במקרה ואין קובץ משותף)
-// ---------------------------------------------------------
+// =========================================================
+// פונקציה למחיקת אירוע (DELETE Request)
+// מופעלת בלחיצה על כפתור המחיקה בכרטיס
+// =========================================================
+function deleteEvent(id) {
+    // וידוא מול המשתמש שהוא באמת רוצה למחוק
+    if (!confirm("האם אתה בטוח שברצונך למחוק אירוע זה?")) return;
+
+    // שליחת בקשת מחיקה לשרת
+    fetch(`${API_URL_DELETE}/${id}`, {
+        method: 'DELETE'
+    })
+        .then(res => {
+            if (res.ok) {
+                alert('האירוע נמחק בהצלחה');
+                // טעינה מחדש של האירועים כדי לעדכן את המסך
+                loadAllEvents();
+            } else {
+                alert('שגיאה במחיקת האירוע');
+            }
+        })
+        .catch(err => console.error(err));
+}
+
+// =========================================================
+// פונקציה לניהול סרגל הניווט (Navbar)
+// בודקת אם המשתמש מחובר ומציגה כפתור יציאה ושם משתמש
+// =========================================================
 function localUpdateNavbar() {
+    // בדיקה ב-LocalStorage אם יש משתמש שמור
     const user = JSON.parse(localStorage.getItem('user'));
     const navList = document.querySelector('.navbar-nav');
     if (!navList) return;
 
     if (user) {
-        // הסתרת כפתורי אורח
+        // הסתרת הלינקים של "התחברות" ו"הרשמה" כי המשתמש כבר מחובר
         const guestLinks = document.querySelectorAll('a[href="login.html"], a[href="register.html"]');
         guestLinks.forEach(link => {
-            if(link.parentElement) link.parentElement.style.display = 'none';
+            if (link.parentElement) link.parentElement.style.display = 'none';
         });
 
-        // הוספת כפתור התנתקות
+        // יצירת אזור "שלום משתמש" וכפתור התנתקות
         if (!document.getElementById('logoutBtn')) {
             const li = document.createElement('li');
             li.className = 'nav-item d-flex align-items-center ms-lg-3';
@@ -146,6 +187,7 @@ function localUpdateNavbar() {
             `;
             navList.appendChild(li);
 
+            // אירוע לחיצה על כפתור התנתקות - מוחק את המשתמש ומעביר לדף ההתחברות
             document.getElementById('logoutBtn').addEventListener('click', () => {
                 localStorage.removeItem('user');
                 window.location.href = 'login.html';

@@ -1,7 +1,20 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2 - Copy\\02-SERVER\\GroundShareAPI\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|c:\\users\\yuval\\source\\repos\\.net shay\\groundshare-2 - copy\\02-server\\groundshareapi\\bl\\event.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|solutionrelative:bl\\event.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|c:\\users\\yuval\\source\\repos\\.net shay\\groundshare-2 - copy\\02-server\\groundshareapi\\dal\\eventsdal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|solutionrelative:dal\\eventsdal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|c:\\users\\yuval\\source\\repos\\.net shay\\groundshare-2 - copy\\02-server\\groundshareapi\\controllers\\eventscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F1A5CF50-66EE-4C1B-973E-BD69309E0A86}|GroundShareAPI.csproj|solutionrelative:controllers\\eventscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,11 +22,50 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "EventsController.cs",
+              "DocumentMoniker": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2 - Copy\\02-SERVER\\GroundShareAPI\\Controllers\\EventsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\EventsController.cs",
+              "ToolTip": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2 - Copy\\02-SERVER\\GroundShareAPI\\Controllers\\EventsController.cs",
+              "RelativeToolTip": "Controllers\\EventsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACAAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-05T10:16:34.866Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Event.cs",
+              "DocumentMoniker": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2 - Copy\\02-SERVER\\GroundShareAPI\\BL\\Event.cs",
+              "RelativeDocumentMoniker": "BL\\Event.cs",
+              "ToolTip": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2 - Copy\\02-SERVER\\GroundShareAPI\\BL\\Event.cs",
+              "RelativeToolTip": "BL\\Event.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAA5wBsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-05T10:16:12.042Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "EventsDAL.cs",
+              "DocumentMoniker": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2 - Copy\\02-SERVER\\GroundShareAPI\\DAL\\EventsDAL.cs",
+              "RelativeDocumentMoniker": "DAL\\EventsDAL.cs",
+              "ToolTip": "C:\\Users\\Yuval\\source\\repos\\.NET SHAY\\GroundShare-2 - Copy\\02-SERVER\\GroundShareAPI\\DAL\\EventsDAL.cs",
+              "RelativeToolTip": "DAL\\EventsDAL.cs",
+              "ViewState": "AgIAAGEAAAAAAAAAAAAEwHEAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-05T10:13:16.32Z",
+              "EditorCaption": ""
             }
           ]
         }

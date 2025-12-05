@@ -1,5 +1,5 @@
-// הגדרת כתובת ה-API של הדירוגים
-const RATINGS_API_URL = 'https://localhost:7057/api/Ratings';
+// שימוש ב-var כדי לאפשר טעינה חוזרת במסכים המשלבים מספר קבצים
+var API_BASE_URL = 'https://localhost:7057/api';
 
 // ---------------------------------------------------------
 // פונקציה להוספת דירוג חדש לאירוע
@@ -7,7 +7,7 @@ const RATINGS_API_URL = 'https://localhost:7057/api/Ratings';
 // ---------------------------------------------------------
 function addRating(ratingData) {
     // מחזירה Promise כדי שהפונקציה הקוראת תוכל לחכות לתשובה (async/await)
-    return fetch(`${RATINGS_API_URL}/add`, {
+    return fetch(`${API_BASE_URL}/Ratings/add`, {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json' 
@@ -30,7 +30,7 @@ function addRating(ratingData) {
 function getRatingsByEvent(eventId) {
     if (!eventId) return;
 
-    fetch(`${RATINGS_API_URL}/byEvent/${eventId}`, {
+    fetch(`${API_BASE_URL}/Ratings/byEvent/${eventId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'

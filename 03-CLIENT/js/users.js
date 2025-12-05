@@ -1,5 +1,5 @@
-// הגדרת כתובת ה-API של המשתמשים
-const API_URL_USERS = 'https://localhost:7057/api/Users';
+// הגדרת כתובת ה-API הבסיסית
+const API_BASE_URL = 'https://localhost:7057/api';
 
 // ---------------------------------------------------------
 // פונקציה ראשית שרצה בטעינת הדף
@@ -41,7 +41,7 @@ function handleLogin(e) {
     };
 
     // שליחת בקשת POST
-    fetch(`${API_URL_USERS}/login`, {
+    fetch(`${API_BASE_URL}/Users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginData)
@@ -102,7 +102,7 @@ function handleRegister(e) {
     };
 
     // שליחת בקשת POST
-    fetch(`${API_URL_USERS}/register`, {
+    fetch(`${API_BASE_URL}/Users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newUser)
