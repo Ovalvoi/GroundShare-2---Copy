@@ -138,5 +138,34 @@ namespace GroundShare.DAL
                 return command.ExecuteNonQuery() > 0;
             }
         }
+
+        // ---------------------------------------------------------------------------------
+        // AD-HOC METHOD (Implementation)
+        // Returns dynamic statistics about event types
+        // ---------------------------------------------------------------------------------
+        public Object GetEventTypeStats()
+        {
+            List<Object> listObjs = new List<Object>();
+
+            using (SqlConnection connection = Connect())
+            {
+                // Using the SP we created
+                SqlCommand command = CreateCommandWithStoredProcedure("spGetEventTypeStats", connection, null);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        // Create an anonymous object dynamically
+                        listObjs.Add(new
+                        {
+                            type = reader["EventsType"].ToString(),
+                            amount = Convert.ToInt32(reader["Total"])
+                        });
+                    }
+                }
+            }
+            return listObjs;
+        }
     }
 }

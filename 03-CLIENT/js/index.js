@@ -1,8 +1,7 @@
 // =========================================================
 // הגדרת קבועים (Constants) לכתובות השרת
 // =========================================================
-const API_URL_ALL_EVENTS = 'https://localhost:7057/api/Events/all';
-const API_URL_DELETE = 'https://localhost:7057/api/Events/delete';
+const API_BASE_URL = 'https://localhost:7057/api';
 
 // =========================================================
 // אירוע טעינת הדף (DOMContentLoaded)
@@ -15,9 +14,93 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         localUpdateNavbar();
     }
-    // קריאה לפונקציה שטוענת את רשימת האירועים מהשרת
+    
+    // 1. טעינת הסטטיסטיקות (Ad-Hoc)
+    loadEventStats();
+
+    // 2. טעינת רשימת האירועים מהשרת
     loadAllEvents();
 });
+
+// =========================================================
+// פונקציה לטעינת הסטטיסטיקות (Ad-Hoc Feature)
+// =========================================================
+function loadEventStats() {
+    fetch(`${API_BASE_URL}/Events/stats`)
+        .then(res => {
+            if (!res.ok) return null; // אם נכשל, פשוט לא נציג סטטיסטיקות
+            return res.json();
+        })
+        .then(stats => {
+            if (stats && stats.length > 0) {
+                renderStatsBox(stats);
+            }
+        })
+        .catch(err => console.error("Error loading stats:", err));
+}
+
+// =========================================================
+// פונקציה לציור קופסת הסטטיסטיקות
+// =========================================================
+function renderStatsBox(stats) {
+    const container = document.querySelector('#eventsContainer');
+    if (!container) return;
+
+    // Remove existing stats box if present to prevent duplication
+    const existingStats = document.getElementById('statsBoxContainer');
+    if (existingStats) {
+        existingStats.remove();
+    }
+
+    // יצירת האלמנט של הסטטיסטיקות
+    const statsDiv = document.createElement('div');
+    statsDiv.id = 'statsBoxContainer'; // Assign an ID to easily find and remove it later
+    statsDiv.className = 'col-12 mb-5';
+    
+    // חישוב סה"כ אירועים
+    const totalEvents = stats.reduce((sum, item) => sum + item.amount, 0);
+
+    // בניית ה-HTML הפנימי של הקופסה
+    let statsHtml = `
+        <div class="card shadow-sm border-0 bg-white">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fa-solid fa-chart-pie me-2"></i>תמונת מצב בשכונה</h5>
+                <span class="badge bg-light text-primary rounded-pill">${totalEvents} אירועים פעילים</span>
+            </div>
+            <div class="card-body">
+                <div class="row text-center justify-content-center g-3">
+    `;
+
+    // הוספת פריט עבור כל סוג אירוע
+    stats.forEach(item => {
+        // בחירת אייקון לפי סוג האירוע (אופציונלי - לשיפור המראה)
+        let icon = 'fa-circle-info';
+        if (item.type.includes('חשמל')) icon = 'fa-bolt';
+        else if (item.type.includes('כביש') || item.type.includes('תשתית')) icon = 'fa-road';
+        else if (item.type.includes('בנייה') || item.type.includes('תמ"א')) icon = 'fa-helmet-safety';
+
+        statsHtml += `
+            <div class="col-6 col-sm-4 col-md-2">
+                <div class="p-2 border rounded bg-light h-100">
+                    <i class="fa-solid ${icon} text-secondary mb-2 fs-5"></i>
+                    <h4 class="h5 fw-bold text-primary mb-0">${item.amount}</h4>
+                    <small class="text-muted">${item.type}</small>
+                </div>
+            </div>
+        `;
+    });
+
+    statsHtml += `
+                </div>
+            </div>
+        </div>
+    `;
+
+    statsDiv.innerHTML = statsHtml;
+
+    // הוספת הקופסה לפני רשימת האירועים (insert before)
+    container.parentNode.insertBefore(statsDiv, container);
+}
 
 // =========================================================
 // פונקציה לטעינת כל האירועים מהשרת (GET Request)
@@ -35,7 +118,7 @@ function loadAllEvents() {
     `;
 
     // שלב 2: שליחת בקשה לשרת לקבלת רשימת האירועים
-    fetch(API_URL_ALL_EVENTS)
+    fetch(`${API_BASE_URL}/Events/all`)
         .then(res => {
             if (!res.ok) throw new Error('שגיאה בטעינת הנתונים');
             return res.json();
@@ -61,11 +144,26 @@ function loadAllEvents() {
 function renderEvents(events) {
     const container = document.querySelector('#eventsContainer');
     // ניקוי הקונטיינר מתוכן קודם (כמו הספינר)
-    container.innerHTML = '';
+    // הערה: אנחנו לא מנקים את כל הקונטיינר כי זה ימחק גם את הסטטיסטיקות אם הן כבר שם
+    // במקום זה, נחפש אם יש הודעת טעינה או שגיאה ונמחק אותן, או ננקה רק את הכרטיסים
+    
+    // אסטרטגיה חלופית: ננקה את הכל ונצייר מחדש את הסטטיסטיקות אם צריך, 
+    // אבל יותר יעיל לזהות את האלמנטים של האירועים ולנקות רק אותם.
+    // כרגע הפתרון הפשוט: ננקה הכל, אבל בגלל שהסטטיסטיקות מוזרקות לפני, אנחנו צריכים להיזהר.
+    
+    // פתרון: נמחק את כל הילדים של הקונטיינר חוץ מהסטטיסטיקות
+    const statsBox = document.getElementById('statsBoxContainer');
+    container.innerHTML = ''; 
+    if (statsBox) {
+        container.appendChild(statsBox);
+    }
 
     // בדיקה אם המערך ריק (אין אירועים)
     if (!events || events.length === 0) {
-        container.innerHTML = '<div class="col-12 text-center">לא נמצאו אירועים במערכת</div>';
+        const msg = document.createElement('div');
+        msg.className = 'col-12 text-center';
+        msg.textContent = 'לא נמצאו אירועים במערכת';
+        container.appendChild(msg);
         return;
     }
 
@@ -73,7 +171,9 @@ function renderEvents(events) {
     events.forEach(event => {
         // טיפול בתמונה: אם הנתיב הוא יחסי (images/...), מוסיפים לו את כתובת השרת
         let imageUrl = event.photoUrl || 'https://placehold.co/600x400?text=No+Image';
-        if (imageUrl.startsWith('images/')) {
+        // אם התמונה לא מתחילה ב-http (כלומר היא נתיב מקומי), נוסיף לה את כתובת השרת
+        // הערה: שיניתי את הבדיקה כדי שתהיה חכמה יותר ותתמוך גם בתמונות חיצוניות
+        if (!imageUrl.startsWith('http')) {
             imageUrl = `https://localhost:7057/${imageUrl}`;
         }
 
@@ -89,7 +189,7 @@ function renderEvents(events) {
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100 shadow-sm event-card">
                     <div class="position-relative">
-                        <img src="${imageUrl}" class="card-img-top event-img-top" alt="תמונת אירוע">
+                        <img src="${imageUrl}" class="card-img-top event-img-top" alt="תמונת אירוע" onerror="this.src='https://placehold.co/600x400?text=Error'">
                         <span class="status-badge status-${event.eventsStatus}">${event.eventsStatus}</span>
                     </div>
                     <div class="card-body d-flex flex-column">
@@ -127,7 +227,8 @@ function renderEvents(events) {
         `;
 
         // הוספת הכרטיס החדש לרשימה בדף
-        container.innerHTML += cardHtml;
+        // שימוש ב-insertAdjacentHTML כדי לא להרוס את ה-DOM הקיים (סטטיסטיקות)
+        container.insertAdjacentHTML('beforeend', cardHtml);
     });
 }
 
@@ -140,7 +241,7 @@ function deleteEvent(id) {
     if (!confirm("האם אתה בטוח שברצונך למחוק אירוע זה?")) return;
 
     // שליחת בקשת מחיקה לשרת
-    fetch(`${API_URL_DELETE}/${id}`, {
+    fetch(`${API_BASE_URL}/Events/delete/${id}`, {
         method: 'DELETE'
     })
         .then(res => {
@@ -148,6 +249,8 @@ function deleteEvent(id) {
                 alert('האירוע נמחק בהצלחה');
                 // טעינה מחדש של האירועים כדי לעדכן את המסך
                 loadAllEvents();
+                // עדכון גם של הסטטיסטיקות
+                loadEventStats();
             } else {
                 alert('שגיאה במחיקת האירוע');
             }

@@ -315,3 +315,13 @@ BEGIN
     ORDER BY E.StartDateTime DESC;
 END
 GO
+
+-- Ad-Hoc: Get count of events per type
+CREATE PROCEDURE spGetEventTypeStats
+AS
+BEGIN
+    SELECT EventsType, COUNT(*) as Total
+    FROM Events
+    GROUP BY EventsType
+END
+GO

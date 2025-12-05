@@ -113,5 +113,23 @@ namespace GroundShare.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        // ---------------------------------------------------------
+        // Ad-Hoc Endpoint
+        // GET api/Events/stats
+        // ---------------------------------------------------------
+        [HttpGet("stats")]
+        public IActionResult GetStats()
+        {
+            try
+            {
+                // Calls the static method in BL (Event.cs)
+                return Ok(Event.GetStats());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error getting stats: " + ex.Message);
+            }
+        }
     }
 }

@@ -1,3 +1,6 @@
+// ייבוא פונקציות הולידציה
+import { validateName, validatePhone, validatePassword } from './validators.js';
+
 // הגדרת כתובת ה-API הבסיסית
 const API_BASE_URL = 'https://localhost:7057/api';
 
@@ -16,6 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // אם אנחנו בדף הרשמה - חבר את פונקציית ההרשמה
     if (registerForm) {
+        // 1. חיבור בדיקות ולידציה בזמן אמת (בעת הקלדה)
+        document.getElementById('firstName').addEventListener('input', validateName);
+        document.getElementById('lastName').addEventListener('input', validateName);
+        document.getElementById('phoneNumber').addEventListener('input', validatePhone);
+        document.getElementById('password').addEventListener('input', validatePassword);
+
+        // 2. חיבור אירוע השליחה
         registerForm.addEventListener('submit', handleRegister);
     }
 });
@@ -33,6 +43,12 @@ function handleLogin(e) {
 
     // איפוס הודעות שגיאה קודמות
     if(msgDiv) msgDiv.textContent = '';
+
+    // בדיקה שהשדות אינם ריקים לפני השליחה
+    if (!emailVal || !passwordVal) {
+        if(msgDiv) msgDiv.textContent = 'אימייל או סיסמה שגויים';
+        return; // עצירת הפונקציה אם אחד השדות ריק
+    }
 
     // יצירת האובייקט לשליחה לשרת
     const loginData = {
@@ -68,6 +84,20 @@ function handleLogin(e) {
 // לוגיקה להרשמה (Register)
 // ---------------------------------------------------------
 function handleRegister(e) {
+    // --- בדיקת ולידציה לפני שליחה ---
+    // הפונקציה checkValidity בודקת אם יש setCustomValidity באחד השדות
+    if (!e.target.checkValidity()) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // הוספת מחלקה של בוטסטראפ שמציגה את השגיאות ויזואלית
+        e.target.classList.add('was-validated');
+        
+        const msgDiv = document.querySelector('#registerMessage');
+        if(msgDiv) msgDiv.textContent = 'אנא תקן את השגיאות בטופס לפני השליחה';
+        return; 
+    }
+
     e.preventDefault(); // מניעת רענון הדף
 
     const msgDiv = document.querySelector('#registerMessage');

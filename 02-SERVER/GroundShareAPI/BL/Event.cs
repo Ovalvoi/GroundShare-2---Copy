@@ -72,5 +72,18 @@ namespace GroundShare.BL
             EventsDAL dal = new EventsDAL();
             return dal.DeleteEvent(id);
         }
+
+        // ---------------------------------------------------------
+        // Ad-Hoc: Get Statistics
+        // Calls the specific DAL logic
+        // ---------------------------------------------------------
+        public static Object GetStats()
+        {
+            EventsDAL dal = new EventsDAL();
+            // Now calling the method on EventsDAL, not DBServices
+            return dal.GetEventTypeStats();
+        }
+
+        
     }
 }

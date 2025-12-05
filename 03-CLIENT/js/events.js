@@ -1,12 +1,28 @@
-// שימוש ב-var כדי לאפשר טעינה חוזרת במסכים המשלבים מספר קבצים
+// ייבוא הולידציה לכותרת
+import { validateEventTitle, validateLocationCity, validateLocationStreet, validateLocationHouseNumber, validateLocationFloor} from './validators.js';
+
 var API_BASE_URL = 'https://localhost:7057/api';
 
-// ---------------------------------------------------------
-// פונקציית אתחול - רצה כשהדף (DOM) נטען במלואו
-// ---------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 1. בדיקה האם יש משתמש מחובר
+    // חיבור ולידציה לשדות של מיקום חדש (כדי שהם יקבלו צבע אדום תוך כדי הקלדה)
+    const cityInput = document.getElementById('newCity');
+    if(cityInput) {
+        cityInput.addEventListener('input', validateLocationCity);
+    }
+    const streetInput = document.getElementById('newStreet');
+    if(streetInput) {
+        streetInput.addEventListener('input', validateLocationStreet);
+    }
+    const houseNumberInput = document.getElementById('newHouseNumber');
+    if(houseNumberInput) {
+        houseNumberInput.addEventListener('input', validateLocationHouseNumber);
+    }
+    const floorInput = document.getElementById('newFloor');
+    if(floorInput) {
+        floorInput.addEventListener('input', validateLocationFloor);
+    }
+
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user) {
         alert('עליך להתחבר כדי להוסיף אירוע');
@@ -14,23 +30,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // 2. עדכון ה-Navbar (הצגת שם משתמש וכפתור התנתקות)
-    if (typeof updateNavbarState === 'function') {
-        updateNavbarState();
-    }
+    // Call the local update function directly to ensure it runs
+    updateNavbarState();
 
-    // 3. טעינת רשימת המיקומים לתוך ה-Dropdown (מ-locations.js)
     if (typeof loadLocationsForSelect === 'function') {
         loadLocationsForSelect();
     }
 
-    // 4. חיבור פונקציית השליחה לטופס
     const form = document.querySelector('#addEventForm');
     if (form) {
+        // חיבור ולידציה לכותרת
+        const titleInput = document.getElementById('eventTitle');
+        if(titleInput) {
+            titleInput.addEventListener('input', validateEventTitle);
+        }
+
         form.addEventListener('submit', onAddEventSubmit);
     }
 
-    // 5. ניהול כפתורי הוספת מיקום (הצגה/הסתרה של הטופס המשני)
     const toggleLocBtn = document.querySelector('#toggleNewLocationBtn');
     const addLocBtn = document.querySelector('#addLocationBtn');
 
@@ -45,17 +62,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ---------------------------------------------------------
-// לוגיקה ראשית: שליחת אירוע (תהליך של 3 שלבים)
-// 1. העלאת תמונה -> 2. יצירת אירוע -> 3. הוספת דירוג ראשוני
-// ---------------------------------------------------------
 async function onAddEventSubmit(e) {
-    e.preventDefault(); // עצירת ברירת המחדל של הדפדפן
-    
-    const msgDiv = document.querySelector('#addEventMessage');
-    const user = JSON.parse(localStorage.getItem('user'));
+    e.preventDefault();
+    e.stopPropagation();
 
-    // וידוא מזהה משתמש (תמיכה באות גדולה/קטנה בהתאם לשרת)
+    // 1. Validation
+    const titleInput = document.getElementById('eventTitle');
+    if (titleInput && titleInput.value) {
+        validateEventTitle({ target: titleInput });
+    }
+
+    if (!e.target.checkValidity()) {
+        e.target.classList.add('was-validated');
+        const msgDiv = document.querySelector('#addEventMessage');
+        if (msgDiv) {
+            msgDiv.textContent = 'נא לתקן את השגיאות בטופס לפני השליחה';
+            msgDiv.className = 'text-danger small mb-3 fw-bold';
+        }
+        return;
+    }
+
+    // 2. Gather Elements
+    const msgDiv = document.querySelector('#addEventMessage');
+    if (!msgDiv) return;
+
+    const user = JSON.parse(localStorage.getItem('user'));
     const userId = user ? (user.userId || user.UserId) : null;
 
     if (!userId) {
@@ -64,7 +95,7 @@ async function onAddEventSubmit(e) {
         return;
     }
 
-    // איסוף נתונים מהשדות בטופס
+    // Select inputs
     const locationEl = document.querySelector('#locationSelect');
     const titleEl = document.querySelector('#eventTitle');
     const typeEl = document.querySelector('#eventType');
@@ -75,66 +106,23 @@ async function onAddEventSubmit(e) {
     const statusEl = document.querySelector('#eventStatus');
     const descEl = document.querySelector('#description');
     
-    // איסוף נתוני דירוג
     const noiseEl = document.querySelector('#noiseScore');
     const trafficEl = document.querySelector('#trafficScore');
     const safetyEl = document.querySelector('#safetyScore');
-
-    // אלמנט קובץ התמונה
     const imageInput = document.querySelector('#eventImage');
 
-    // ---------------------------------------------------------
-    // בדיקות ולידציה + סימון באדום (Red Highlight)
-    // ---------------------------------------------------------
-    
-    // ניקוי סימונים קודמים (הסרת המחלקה is-invalid מכל השדות)
-    const allInputs = document.querySelectorAll('.form-control, .form-select');
-    allInputs.forEach(el => el.classList.remove('is-invalid'));
-
-    let hasError = false;
-
-    // פונקציית עזר לבדיקה וסימון שדה
-    function validateField(element) {
-        if (!element || !element.value || element.value === "") {
-            if (element) element.classList.add('is-invalid'); // הוספת Class של Bootstrap למסגרת אדומה
-            hasError = true;
-        }
-    }
-
-    // בדיקת שדות החובה (בהתאם ללוגיקה המקורית)
-    validateField(locationEl);
-    validateField(typeEl);
-    validateField(startEl);
-    validateField(municipalityEl);
-    validateField(statusEl);
-    
-    // בדיקת דירוגים
-    validateField(noiseEl);
-    validateField(trafficEl);
-    validateField(safetyEl);
-
-    // בדיקת תמונה בנפרד (כי זה file input)
+    // 3. Image Check
     if (!imageInput.files || imageInput.files.length === 0) {
-        imageInput.classList.add('is-invalid');
-        hasError = true;
-    }
-
-    // אם נמצאה שגיאה, מציגים הודעה ועוצרים
-    if (hasError) {
-        msgDiv.textContent = 'נא למלא את כל שדות החובה המסומנים באדום';
-        msgDiv.className = 'text-danger small mb-3 fw-bold';
+        msgDiv.textContent = 'חובה להעלות תמונה';
+        msgDiv.className = 'text-danger small mb-3';
         return;
     }
 
-    // ---------------------------------------------------------
-    // שליחת הנתונים לשרת (רק אם הכל תקין)
-    // ---------------------------------------------------------
     try {
-        // הצגת חיווי למשתמש שהתהליך התחיל
         msgDiv.textContent = 'שומר נתונים...';
         msgDiv.className = 'text-info small mb-3';
-
-        // --- שלב 1: העלאת תמונה לשרת ---
+        
+        // --- Step A: Upload Image ---
         let finalPhotoUrl = null;
         const formData = new FormData();
         formData.append('file', imageInput.files[0]);
@@ -144,11 +132,16 @@ async function onAddEventSubmit(e) {
             body: formData
         });
 
-        if (!uploadRes.ok) throw new Error('שגיאה בהעלאת התמונה');
+        if (!uploadRes.ok) throw new Error(`Image upload failed: ${uploadRes.statusText}`);
         const uploadData = await uploadRes.json();
-        finalPhotoUrl = uploadData.path; // השרת מחזיר את הנתיב לשמירה ב-DB
+        finalPhotoUrl = uploadData.path;
+        
+        // --- Step B: Create Event ---
+        const locId = parseInt(locationEl.value);
+        if (isNaN(locId)) {
+            throw new Error("Invalid Location ID selected");
+        }
 
-        // --- שלב 2: יצירת רשומת האירוע ב-DB ---
         const eventData = {
             StartDateTime: startEl.value,
             EndDateTime: endEl.value ? endEl.value : null,
@@ -158,7 +151,7 @@ async function onAddEventSubmit(e) {
             Municipality: municipalityEl.value,
             ResponsibleBody: responsibleEl.value,
             EventsStatus: statusEl.value,
-            LocationsId: parseInt(locationEl.value)
+            LocationsId: locId
         };
 
         const createRes = await fetch(`${API_BASE_URL}/Events/create`, {
@@ -168,15 +161,14 @@ async function onAddEventSubmit(e) {
         });
 
         if (!createRes.ok) {
-            const errText = await createRes.text();
-            console.error('Event Creation Error:', errText);
-            throw new Error('שגיאה ביצירת האירוע בשרת');
+            const errorText = await createRes.text(); 
+            throw new Error(`Event creation failed (${createRes.status}): ${errorText}`);
         }
 
         const createData = await createRes.json();
         const newEventId = createData.eventsId || createData.EventsId;
 
-        // --- שלב 3: הוספת דירוג ראשוני לאירוע ---
+        // --- Step C: Add Rating ---
         const avgScore = Math.round((Number(noiseEl.value) + Number(trafficEl.value) + Number(safetyEl.value)) / 3);
         
         const ratingData = {
@@ -186,7 +178,7 @@ async function onAddEventSubmit(e) {
             NoiseScore: parseInt(noiseEl.value),
             TrafficScore: parseInt(trafficEl.value),
             SafetyScore: parseInt(safetyEl.value),
-            Comment: 'אין תיאור' // תיאור ברירת מחדל
+            Comment: 'אין תיאור'
         };
 
         const ratingRes = await fetch(`${API_BASE_URL}/Ratings/add`, {
@@ -195,32 +187,24 @@ async function onAddEventSubmit(e) {
             body: JSON.stringify(ratingData)
         });
 
-        if (!ratingRes.ok) {
-            const errText = await ratingRes.text();
-            console.error('Rating Creation Error:', errText);
-            throw new Error('האירוע נוצר אך הייתה שגיאה בשמירת הדירוג: ' + errText);
-        }
+        if (!ratingRes.ok) throw new Error('Event created, but rating failed.');
 
-        // --- סיום מוצלח ---
+        // --- Success ---
         msgDiv.textContent = 'האירוע והדירוג נוספו בהצלחה! מעביר לדף הבית...';
-        msgDiv.className = 'text-success small mb-3';
-        
-        // המתנה קצרה ומעבר לדף הבית
-        setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 0);
+        msgDiv.className = 'text-success small mb-3 fw-bold';
+        window.location.href = 'index.html';
 
     } catch (error) {
-        console.error(error);
-        msgDiv.textContent = error.message;
-        msgDiv.className = 'text-danger small mb-3';
+        console.error(error); // Keep actual errors in console for debugging crashes
+        msgDiv.textContent = `שגיאה: ${error.message}`;
+        msgDiv.className = 'text-danger small mb-3 fw-bold';
     }
 }
 
-// ---------------------------------------------------------
-// פונקציית עזר לעדכון ה-Navbar
-// בודקת אם יש משתמש ב-localStorage ומציגה את שמו וכפתור התנתקות
-// ---------------------------------------------------------
+// =========================================================
+// פונקציה לניהול סרגל הניווט (Navbar)
+// בודקת אם המשתמש מחובר ומציגה כפתור יציאה ושם משתמש
+// =========================================================
 function updateNavbarState() {
     const user = JSON.parse(localStorage.getItem('user'));
     const navList = document.querySelector('.navbar-nav');
@@ -233,20 +217,23 @@ function updateNavbarState() {
             if (link.parentElement) link.parentElement.style.display = 'none';
         });
 
-        // הוספת אלמנט "שלום משתמש" וכפתור התנתקות
-        if (!document.querySelector('#logoutBtn')) {
+        // יצירת אזור "שלום משתמש" וכפתור התנתקות
+        if (!document.getElementById('logoutBtn')) {
             const li = document.createElement('li');
-            li.className = 'nav-item d-flex align-items-center';
-            // תמיכה באות גדולה/קטנה לשם המשתמש
+            li.className = 'nav-item d-flex align-items-center ms-lg-3';
             const userName = user.FirstName || user.firstName || 'משתמש';
             li.innerHTML = `
-                <span class="nav-link text-dark fw-bold">שלום, ${userName}</span>
-                <button id="logoutBtn" class="btn btn-outline-danger btn-sm ms-2">התנתק</button>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fw-bold text-primary">שלום, ${userName}</span>
+                    <button id="logoutBtn" class="btn btn-sm btn-outline-danger">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
             `;
             navList.appendChild(li);
 
-            // אירוע לחיצה על התנתקות
-            document.querySelector('#logoutBtn').addEventListener('click', () => {
+            // אירוע לחיצה על כפתור התנתקות
+            document.getElementById('logoutBtn').addEventListener('click', () => {
                 localStorage.removeItem('user');
                 window.location.href = 'login.html';
             });

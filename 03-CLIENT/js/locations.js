@@ -42,17 +42,36 @@ function loadLocationsForSelect() {
 // מופעלת בלחיצה על כפתור "הוסף מיקום חדש" בטופס
 // ---------------------------------------------------------
 function addNewLocation() {
-    // שליפת הערכים משדות הטופס של המיקום החדש
-    const city = document.querySelector('#newCity').value;
-    const street = document.querySelector('#newStreet').value;
-    const houseNumber = document.querySelector('#newHouseNumber').value;
-    const houseType = document.querySelector('#newBuildingType').value;
-    const floor = document.querySelector('#newFloor').value;
+    // שליפת האלמנטים (לא רק הערכים) כדי שנוכל לבדוק תקינות (checkValidity)
+    const cityInput = document.querySelector('#newCity');
+    const streetInput = document.querySelector('#newStreet');
+    const houseNumberInput = document.querySelector('#newHouseNumber');
+    const houseTypeInput = document.querySelector('#newBuildingType');
+    const floorInput = document.querySelector('#newFloor');
 
-    // ולידציה בסיסית - בדיקה שכל שדות החובה מלאים
+    // שליפת הערכים
+    const city = cityInput.value;
+    const street = streetInput.value;
+    const houseNumber = houseNumberInput.value;
+    const houseType = houseTypeInput.value;
+    const floor = floorInput.value;
+
+    // 1. בדיקה אם שדות החובה מלאים
     if (!city || !street || !houseNumber || !houseType) {
         alert('נא למלא את כל שדות המיקום (עיר, רחוב, מספר וסוג)');
         return;
+    }
+
+    // 2. בדיקת ולידציה (Regex)
+    // בדיקה האם הדפדפן סימן את השדות כשגויים (אדום) בעקבות הולידציה שלנו
+    if (!cityInput.checkValidity() || !streetInput.checkValidity() || 
+        !houseNumberInput.checkValidity() || !floorInput.checkValidity()) {
+        
+        // סימון ויזואלי של השדות השגויים (למקרה שהמשתמש לא נגע בהם עדיין)
+        cityInput.classList.add('was-validated'); 
+        streetInput.classList.add('was-validated');
+        alert('יש לתקן את השדות המסומנים באדום לפני הוספת המיקום (למשל: עיר ללא מספרים)');
+        return; // עצירה - לא שולחים לשרת!
     }
 
     // יצירת אובייקט מיקום לשליחה לשרת (תואם למחלקת Location ב-C#)
@@ -76,7 +95,6 @@ function addNewLocation() {
     })
     .then(data => {
         // קבלת ה-ID החדש מהתשובה של השרת
-        // תמיכה באות גדולה או קטנה בתשובה (Case Insensitive)
         const newId = data.locationsId || data.LocationsId;
         
         // הוספת המיקום החדש לרשימה הנגללת ובחירתו באופן אוטומטי
@@ -89,11 +107,17 @@ function addNewLocation() {
             select.value = newId; // סימון המיקום החדש כבחור
         }
         
-        // הסתרת טופס המיקום החדש וניקוי השדות למקרה שירצו להוסיף עוד
+        // הסתרת טופס המיקום החדש וניקוי השדות
         document.querySelector('#newLocationSection').classList.add('d-none');
-        document.querySelector('#newCity').value = '';
-        document.querySelector('#newStreet').value = '';
-        document.querySelector('#newHouseNumber').value = '';
+        cityInput.value = '';
+        streetInput.value = '';
+        houseNumberInput.value = '';
+        floorInput.value = '';
+        
+        // ניקוי סימוני הולידציה (ירוק/אדום)
+        cityInput.classList.remove('is-valid', 'is-invalid');
+        streetInput.classList.remove('is-valid', 'is-invalid');
+        houseNumberInput.classList.remove('is-valid', 'is-invalid');
         
         alert('מיקום נוסף בהצלחה!');
     })
