@@ -66,6 +66,16 @@ namespace GroundShare.BL
             return newId; // החזרת המזהה החדש
         }
 
+        // ---------------------------------------------------------
+        //  פונקציה לעדכון סטטוס (PUT)
+        // ---------------------------------------------------------
+        public bool UpdateStatus(string newStatus)
+        {
+            EventsDAL dal = new EventsDAL();
+            // אנו מעבירים את ה-ID של המופע הנוכחי ואת הסטטוס החדש
+            return dal.UpdateEventStatus(this.EventsId, newStatus);
+        }
+
         // מחיקת אירוע לפי מזהה (ID)
         public static bool Delete(int id)
         {

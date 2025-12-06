@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         localUpdateNavbar();
     }
-    
+
     // 1. טעינת הסטטיסטיקות (Ad-Hoc)
     loadEventStats();
 
@@ -55,17 +55,19 @@ function renderStatsBox(stats) {
     // יצירת האלמנט של הסטטיסטיקות
     const statsDiv = document.createElement('div');
     statsDiv.id = 'statsBoxContainer'; // Assign an ID to easily find and remove it later
-    statsDiv.className = 'col-12 mb-5';
-    
+    statsDiv.className = 'col-12 mb-1';
+
     // חישוב סה"כ אירועים
+    //the calculation of total events from stats array
+    //example: [{ type: "חשמל", amount: 5 }, { type: "כביש", amount: 3 }] => totalEvents = 8
     const totalEvents = stats.reduce((sum, item) => sum + item.amount, 0);
 
     // בניית ה-HTML הפנימי של הקופסה
     let statsHtml = `
         <div class="card shadow-sm border-0 bg-white">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="fa-solid fa-chart-pie me-2"></i>תמונת מצב בשכונה</h5>
-                <span class="badge bg-light text-primary rounded-pill">${totalEvents} אירועים פעילים</span>
+                <h5 class="mb-0"><i class="fa-solid fa-chart-pie me-2"></i>תמונת מצב בשימוש Ad-Hoc</h5>
+                <span class="badge bg-light text-primary rounded-pill">${totalEvents} אירועים במערכת</span>
             </div>
             <div class="card-body">
                 <div class="row text-center justify-content-center g-3">
@@ -73,7 +75,7 @@ function renderStatsBox(stats) {
 
     // הוספת פריט עבור כל סוג אירוע
     stats.forEach(item => {
-        // בחירת אייקון לפי סוג האירוע (אופציונלי - לשיפור המראה)
+        // בחירת אייקון לפי סוג האירוע
         let icon = 'fa-circle-info';
         if (item.type.includes('חשמל')) icon = 'fa-bolt';
         else if (item.type.includes('כביש') || item.type.includes('תשתית')) icon = 'fa-road';
@@ -143,17 +145,8 @@ function loadAllEvents() {
 // =========================================================
 function renderEvents(events) {
     const container = document.querySelector('#eventsContainer');
-    // ניקוי הקונטיינר מתוכן קודם (כמו הספינר)
-    // הערה: אנחנו לא מנקים את כל הקונטיינר כי זה ימחק גם את הסטטיסטיקות אם הן כבר שם
-    // במקום זה, נחפש אם יש הודעת טעינה או שגיאה ונמחק אותן, או ננקה רק את הכרטיסים
-    
-    // אסטרטגיה חלופית: ננקה את הכל ונצייר מחדש את הסטטיסטיקות אם צריך, 
-    // אבל יותר יעיל לזהות את האלמנטים של האירועים ולנקות רק אותם.
-    // כרגע הפתרון הפשוט: ננקה הכל, אבל בגלל שהסטטיסטיקות מוזרקות לפני, אנחנו צריכים להיזהר.
-    
-    // פתרון: נמחק את כל הילדים של הקונטיינר חוץ מהסטטיסטיקות
     const statsBox = document.getElementById('statsBoxContainer');
-    container.innerHTML = ''; 
+    container.innerHTML = '';
     if (statsBox) {
         container.appendChild(statsBox);
     }
@@ -209,11 +202,19 @@ function renderEvents(events) {
                         </div>
 
                         <div class="d-flex gap-2 mt-2 pt-2 border-top">
+                        <!-- כפתור עדכון סטטוס -->
+                             <button onclick="markToEdit('${event.eventsId}')" class="btn btn-sm btn-outline-success flex-fill ms-1">
+                                <i class="fa-solid fa-pencil"></i> סטטוס
+                             </button>
+                             <!-- כפתור מחיקה אירוע -->
                              <button onclick="deleteEvent('${event.eventsId}')" 
                                 class="btn btn-sm btn-outline-danger flex-fill">
                                 <i class="fa-solid fa-trash"></i> מחיקה
                              </button>
+                             
                         </div>
+                       
+
 
                         <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
                              <div class="text-warning fw-bold">
@@ -256,6 +257,87 @@ function deleteEvent(id) {
             }
         })
         .catch(err => console.error(err));
+}
+
+// =========================================================
+// פונקציה לעדכון סטטוס אירוע (PUT Request)
+// =========================================================
+function markToEdit(id) {
+    // בדיקה אם המודל כבר קיים בדף, ואם לא - יצירה שלו דינאמית
+    if (!document.getElementById('statusUpdateModal')) {
+        const modalHtml = `
+            <div class="modal fade" id="statusUpdateModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title"><i class="fa fa-pencil me-2"></i>עדכון סטטוס אירוע</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="statusUpdateEventId">
+                            <div class="mb-3">
+                                <label for="statusSelect" class="form-label fw-bold">בחר את הסטטוס החדש:</label>
+                                <select class="form-select" id="statusSelect">
+                                    <option value="קרה">קרה (הסתיים)</option>
+                                    <option value="קורה">קורה (מתרחש כעת)</option>
+                                    <option value="יקרה">יקרה (עתידי)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                            <button type="button" class="btn btn-success" onclick="submitStatusUpdate()">שמור שינויים</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        
+        // הוספת המודל לגוף הדף
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    // שמירת ה-ID של האירוע הנוכחי בתוך שדה נסתר במודל
+    document.getElementById('statusUpdateEventId').value = id;
+
+    // איפוס הבחירה לברירת מחדל (אופציונלי)
+    document.getElementById('statusSelect').value = 'קורה';
+
+    // פתיחת המודל באמצעות Bootstrap
+    const modalElement = document.getElementById('statusUpdateModal');
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+}
+
+// פונקציה לשליחת העדכון מהמודל
+function submitStatusUpdate() {
+    const id = document.getElementById('statusUpdateEventId').value;
+    const newStatus = document.getElementById('statusSelect').value;
+
+    // שליחת בקשת PUT לשרת
+    fetch(`${API_BASE_URL}/Events/updateStatus/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newStatus)
+    })
+    .then(res => {
+        if (res.ok) {
+            // סגירת המודל
+            const modalElement = document.getElementById('statusUpdateModal');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            modal.hide();
+
+            // הודעת הצלחה ורענון
+            alert("הסטטוס עודכן בהצלחה!");
+            loadAllEvents(); // רענון רשימת האירועים
+            loadEventStats(); // רענון הסטטיסטיקות
+        } else {
+            alert("שגיאה בעדכון הסטטוס");
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("שגיאה בתקשורת עם השרת");
+    });
 }
 
 // =========================================================

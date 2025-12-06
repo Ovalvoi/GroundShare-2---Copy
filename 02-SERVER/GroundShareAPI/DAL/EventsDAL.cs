@@ -51,7 +51,7 @@ namespace GroundShare.DAL
         }
 
         // ---------------------------------------------------------------------------------
-        // שליפת אירוע בודד לפי מזהה
+        // שליפת אירוע בודד לפי מזהה spGetEventById
         // ---------------------------------------------------------------------------------
         public Event GetEventById(int id)
         {
@@ -88,7 +88,7 @@ namespace GroundShare.DAL
         }
 
         // ---------------------------------------------------------------------------------
-        // יצירת אירוע חדש
+        // יצירת אירוע חדש spCreateEvent
         // ---------------------------------------------------------------------------------
         public int CreateEvent(Event ev)
         {
@@ -126,7 +126,25 @@ namespace GroundShare.DAL
         }
 
         // ---------------------------------------------------------------------------------
-        // מחיקת אירוע (מוחק גם את הדירוגים הקשורים אליו ב-SP)
+        // עדכון סטטוס אירוע PUT spUpdateEventStatus
+        // ---------------------------------------------------------------------------------
+        public bool UpdateEventStatus(int id, string status)
+        {
+            using (SqlConnection connection = Connect())
+            {
+                var p = new Dictionary<string, object>
+        {
+            { "@EventsId", id },
+            { "@NewStatus", status }
+        };
+
+                SqlCommand command = CreateCommandWithStoredProcedure("spUpdateEventStatus", connection, p);
+                return command.ExecuteNonQuery() > 0;
+            }
+        }
+
+        // ---------------------------------------------------------------------------------
+        // מחיקת אירוע (מוחק גם את הדירוגים הקשורים אליו ב-SP) spDeleteEvent
         // ---------------------------------------------------------------------------------
         public bool DeleteEvent(int id)
         {
@@ -145,6 +163,7 @@ namespace GroundShare.DAL
         // ---------------------------------------------------------------------------------
         public Object GetEventTypeStats()
         {
+            // Using a list of anonymous objects to hold the results
             List<Object> listObjs = new List<Object>();
 
             using (SqlConnection connection = Connect())

@@ -325,3 +325,16 @@ BEGIN
     GROUP BY EventsType
 END
 GO
+
+
+-- Event Status Update
+CREATE PROCEDURE spUpdateEventStatus
+    @EventsId INT,
+    @NewStatus NVARCHAR(20)
+AS
+BEGIN
+    UPDATE Events
+    SET EventsStatus = @NewStatus
+    WHERE EventsId = @EventsId;
+END
+GO

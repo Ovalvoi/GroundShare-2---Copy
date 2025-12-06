@@ -66,6 +66,26 @@ namespace GroundShare.Controllers
         }
 
         // ---------------------------------------------------------------------------------
+        // NEW: PUT api/Events/updateStatus/{id}
+        // פונקציה חדשה לעדכון הסטטוס
+        // ---------------------------------------------------------------------------------
+        [HttpPut("updateStatus/{id}")]
+        public IActionResult UpdateStatus(int id, [FromBody] string newStatus)
+        {
+            if (string.IsNullOrEmpty(newStatus)) return BadRequest("Status is required");
+
+            Event ev = new Event();
+            ev.EventsId = id;
+
+            // שימוש ב-BL לעדכון
+            if (ev.UpdateStatus(newStatus))
+            {
+                return Ok(new { Message = "Status updated successfully" });
+            }
+            return NotFound("Event not found");
+        }
+
+        // ---------------------------------------------------------------------------------
         // מחיקת אירוע לפי מזהה (DELETE api/Events/delete/{id})
         // ---------------------------------------------------------------------------------
         [HttpDelete("delete/{id}")]
